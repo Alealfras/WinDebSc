@@ -1,0 +1,40 @@
+# --- Entornos y SO ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- IDEs / Editores ---
+.vscode/
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+
+# --- Java / Compilacion ---
+*.class
+bin/
+target/
+build/
+*.jar
+*.war
+
+# --- LaTeX (TeXworks / TeXLive / MiKTeX) ---
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.synctex(busy)
+*.toc
+*.nav
+*.snm
+*.vrb
+# Nota: Si quieres conservar el PDF generado en Git, no ignores *.pdf, pero sí las copias temporales

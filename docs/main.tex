@@ -1,0 +1,114 @@
+\documentclass[12pt,a4paper]{report}
+
+% --- Paquetes indispensables ---
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{titlesec}
+\usepackage{parskip}
+
+% --- Configuración de enlaces ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!80!black,
+    urlcolor=blue!80!black,
+    citecolor=green!50!black
+}
+
+% --- Configuración de listados de código ---
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.96,0.96,0.96}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegray},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+% ========================================================
+% INICIO DEL DOCUMENTO
+% ========================================================
+\begin{document}
+
+% --- Portada ---
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    {\scshape\LARGE Universidad de Ingeniería \par}
+    \vspace{1cm}
+    {\scshape\Large Trabajo de Fin de Grado\par}
+    \vspace{1.5cm}
+    {\huge\bfseries WinDebSc: Herramienta de Automatización y Optimización de Windows en Java \par}
+    \vspace{2cm}
+    {\Large\itshape Autor: Alealfras\par}
+    \vspace{0.5cm}
+    {\large Grado en Ingeniería Informática\par}
+    \vfill
+    {\large Fecha: \today \par}
+\end{titlepage}
+
+% --- Resumen y Tabla de Contenidos ---
+\pagenumbering{roman}
+
+\begin{abstract}
+Este documento describe el desarrollo de \textbf{WinDebSc}, una aplicación de escritorio desarrollada en Java diseñada para centralizar, automatizar y gestionar el proceso de optimización y eliminación de bloatware (debloating) en sistemas operativos Windows. Inspirada en utilidades como la herramienta de Chris Titus, esta solución integra ejecución segura de scripts de PowerShell, personalización de directivas de sistema y una interfaz intuitiva con trazabilidad de acciones y restauración ante fallos.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\pagenumbering{arabic}
+
+% ========================================================
+% CAPÍTULOS
+% ========================================================
+
+\chapter{Introducción y Motivación}
+\section{Contexto del Problema}
+Los sistemas operativos modernos, en especial Windows 10 y Windows 11, incluyen por defecto una gran cantidad de servicios en segundo plano, recolección de telemetría y software preinstalado comúnmente denominado \textit{bloatware}. Estos componentes consumen recursos del hardware (CPU, memoria RAM, lecturas/escrituras en disco) y plantean consideraciones relevantes sobre la privacidad del usuario.
+
+\section{Inspiración y Objetivos}
+Existen soluciones en la comunidad de código abierto, destacando la popular herramienta \textit{WinUtil} de Chris Titus. El objetivo de este proyecto es diseñar una suite propia con interfaz gráfica desarrollada en \textbf{Java}, capaz de orquestar scripts de automatización modulares y reproducibles en el sistema anfitrión.
+
+\section{Estructura de la Memoria}
+La presente memoria documenta todo el ciclo de vida del software: análisis de requerimientos, diseño modular, implementación en Java y PowerShell, y batería de pruebas.
+
+\chapter{Fundamentos Teóricos y Estado del Arte}
+\section{Concepto de Debloating y Telemetría}
+\section{Seguridad y Políticas de Ejecución de PowerShell}
+\section{Interoperabilidad entre Java (ProcessBuilder) y el Sistema Operativo}
+
+\chapter{Análisis de Requisitos}
+\section{Requisitos Funcionales}
+\section{Requisitos No Funcionales}
+
+\chapter{Diseño e Implementación}
+\section{Arquitectura del Sistema}
+\section{Módulos de Automatización (PowerShell)}
+\section{Interfaz y Lógica de Negocio (Java)}
+
+\chapter{Pruebas y Validación}
+\section{Pruebas en Entorno Controlado (Máquina Virtual)}
+
+\chapter{Conclusiones y Trabajo Futuro}
+
+\end{document}
