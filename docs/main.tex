@@ -94,17 +94,73 @@ La presente memoria documenta todo el ciclo de vida del software: análisis de r
 
 \chapter{Fundamentos Teóricos y Estado del Arte}
 \section{Concepto de Debloating y Telemetría}
+El término \textit{debloating} hace referencia al proceso sistemático de remover o deshabilitar aplicaciones preinstaladas, servicios redundantes y mecanismos de telemetría en un sistema operativo. En el ecosistema Windows 10 y Windows 11, la telemetría recopila eventos de diagnóstico del sistema mediante componentes como el servicio de Experiencias del Usuario y Telemetría Asociadas (\texttt{DiagTrack}). Si bien estos datos permiten a los desarrolladores identificar errores, introducen sobrecarga continua en ciclos de CPU, I/O en disco y debates en torno a la privacidad de los datos personales.
+
 \section{Seguridad y Políticas de Ejecución de PowerShell}
+PowerShell implementa directivas de ejecución (\textit{Execution Policies}) diseñadas no como barreras de seguridad infranqueables, sino como medidas preventivas frente a la ejecución accidental de scripts maliciosos. Por defecto, los clientes Windows restringen la ejecución de scripts no firmados (\texttt{Restricted}). 
+
+Para permitir la automatización sin vulnerar de forma permanente la configuración global del registro de Windows, se emplea el parámetro \texttt{-ExecutionPolicy Bypass} acotado exclusivamente al proceso hijo generado. Esto garantiza que la directiva permisiva solo viva durante el ciclo de vida del proceso invocado, restableciendo la seguridad del host inmediatamente tras su finalización.
+
 \section{Interoperabilidad entre Java (ProcessBuilder) y el Sistema Operativo}
+La plataforma Java proporciona la API \texttt{java.lang.ProcessBuilder} para instanciar subprocesos a nivel de sistema operativo. A diferencia de las llamadas primitivas heredadas de \texttt{Runtime.getRuntime().exec()}, \texttt{ProcessBuilder} ofrece:
+\begin{itemize}
+    \item Control explícito de la tabla de variables de entorno.
+    \item Redirección y combinación de los descriptores estándar de entrada, salida y error (\texttt{stdin}, \texttt{stdout}, \texttt{stderr}).
+    \item Sincronización precisa mediante el código de salida (\textit{exit code}), respetando el estándar POSIX donde el valor $0$ denota terminación correcta y valores distintos de cero indican condiciones de error.
+\end{itemize}
 
 \chapter{Análisis de Requisitos}
-\section{Requisitos Funcionales}
-\section{Requisitos No Funcionales}
+\section{Requisitos Funcionales (RF)}
+\begin{itemize}
+    \item \textbf{RF-1 (Seguridad Preventiva)}: El sistema debe permitir la creación de un punto de restauración del sistema (\textit{System Restore Point}) antes de la aplicación de cambios destructivos o modificaciones del registro.
+    \item \textbf{RF-2 (Verificación de Privilegios)}: El sistema debe validar la presencia de privilegios administrativos (UAC) antes de despachar tareas que modifiquen servicios o directivas del sistema.
+    \item \textbf{RF-3 (Ejecución Asíncrona y Streaming)}: La interfaz debe consumir y mostrar las trazas de ejecución de PowerShell en tiempo real sin congelar el hilo principal.
+\end{itemize}
+
+\section{Requisitos No Funcionales (RNF)}
+\begin{itemize}
+    \item \textbf{RNF-1 (Modularidad)}: Los scripts de automatización deben ser independientes y desacoplados del código Java.
+    \item \textbf{RNF-2 (No Intrusividad)}: La aplicación no debe modificar permanentemente las directivas globales de PowerShell en la máquina anfitriona.
+\end{itemize}
 
 \chapter{Diseño e Implementación}
 \section{Arquitectura del Sistema}
-\section{Módulos de Automatización (PowerShell)}
-\section{Interfaz y Lógica de Negocio (Java)}
+El sistema sigue un modelo desacoplado en dos capas:
+\begin{enumerate}
+    \item \textbf{Capa de Orquestación y Presentación (Java)}: Responsable de la lógica de negocio, verificación de prerequisitos, selección de módulos y presentación de trazas.
+    \item \textbf{Capa de Actuación (PowerShell)}: Scripts modulares con acceso nativo al Windows Management Instrumentation (WMI), registro del sistema y administración de servicios.
+\end{enumerate}
+
+\section{Módulo de Seguridad Preventiva (\texttt{restore-point.ps1})}
+El script \texttt{restore-point.ps1} implementa la primera línea de defensa. Realiza las siguientes operaciones:
+\begin{enumerate}
+    \item Valida que la identidad del subproceso pertenezca al rol nativo de Administrador mediante \texttt{WindowsBuiltInRole::Administrator}.
+    \item Activa la directiva de restauración en el volumen raíz (\texttt{C:\textbackslash}) si estuviese previamente inactiva mediante \texttt{Enable-ComputerRestore}.
+    \item Genera una instantánea con el cmdlet \texttt{Checkpoint-Computer} bajo la categoría \texttt{MODIFY\_SETTINGS}.
+\end{enumerate}
+
+\section{Gestor de Procesos en Java (\texttt{ScriptRunner.java})}
+La clase \texttt{ScriptRunner} encapsula la comunicación interproceso. A continuación se ilustra la invocación parametrizada y la captura en tiempo real mediante un consumidor funcional:
+
+\begin{lstlisting}[language=Java, caption=Ejecución controlada de PowerShell con ProcessBuilder]
+ProcessBuilder processBuilder = new ProcessBuilder(
+    "powershell.exe",
+    "-NoProfile",
+    "-ExecutionPolicy", "Bypass",
+    "-File", scriptFile.getAbsolutePath()
+);
+processBuilder.redirectErrorStream(true);
+Process process = processBuilder.start();
+
+try (BufferedReader reader = new BufferedReader(
+        new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+    String line;
+    while ((line = reader.readLine()) != null) {
+        outputListener.accept(line);
+    }
+}
+return process.waitFor();
+\end{lstlisting}
 
 \chapter{Pruebas y Validación}
 \section{Pruebas en Entorno Controlado (Máquina Virtual)}
