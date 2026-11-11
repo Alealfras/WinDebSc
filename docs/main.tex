@@ -10,6 +10,14 @@
 \usepackage{listings}
 \usepackage{titlesec}
 \usepackage{parskip}
+\usepackage{microtype}
+\usepackage[htt]{hyphenat}
+\usepackage{xurl}
+
+% --- Ajustes de justificación y márgenes ---
+\emergencystretch 3em
+\tolerance=2000
+\hbadness=2000
 
 % --- Configuración de enlaces ---
 \hypersetup{
@@ -131,15 +139,15 @@ El sistema sigue un modelo desacoplado en dos capas:
     \item \textbf{Capa de Actuación (PowerShell)}: Scripts modulares con acceso nativo al Windows Management Instrumentation (WMI), registro del sistema y administración de servicios.
 \end{enumerate}
 
-\section{Módulo de Seguridad Preventiva (\texttt{restore-point.ps1})}
+\section[Módulo de Seguridad Preventiva]{Módulo de Seguridad Preventiva\\ \large(\texttt{restore-point.ps1})}
 El script \texttt{restore-point.ps1} implementa la primera línea de defensa. Realiza las siguientes operaciones:
 \begin{enumerate}
-    \item Valida que la identidad del subproceso pertenezca al rol nativo de Administrador mediante \texttt{WindowsBuiltInRole::Administrator}.
+    \item Valida que la identidad del subproceso pertenezca al rol nativo de Administrador mediante \texttt{WindowsBuiltInRole::\allowbreak Administrator}.
     \item Activa la directiva de restauración en el volumen raíz (\texttt{C:\textbackslash}) si estuviese previamente inactiva mediante \texttt{Enable-ComputerRestore}.
     \item Genera una instantánea con el cmdlet \texttt{Checkpoint-Computer} bajo la categoría \texttt{MODIFY\_SETTINGS}.
 \end{enumerate}
 
-\section{Gestor de Procesos en Java (\texttt{ScriptRunner.java})}
+\section[Gestor de Procesos en Java]{Gestor de Procesos en Java\\ \large(\texttt{ScriptRunner.java})}
 La clase \texttt{ScriptRunner} encapsula la comunicación interproceso. A continuación se ilustra la invocación parametrizada y la captura en tiempo real mediante un consumidor funcional:
 
 \begin{lstlisting}[language=Java, caption=Ejecución controlada de PowerShell con ProcessBuilder]
@@ -162,7 +170,7 @@ try (BufferedReader reader = new BufferedReader(
 return process.waitFor();
 \end{lstlisting}
 
-\section{Módulo de Optimización de Telemetría (\texttt{disable-telemetry.ps1})}
+\section[Módulo de Optimización de Telemetría]{Módulo de Optimización de Telemetría\\ \large(\texttt{disable-telemetry.ps1})}
 La erradicación de los mecanismos de telemetría en sistemas Windows constituye uno de los pilares centrales del proceso de \textit{debloating}. El script \texttt{disable-telemetry.ps1} implementa una estrategia por capas dividida en tres ejes fundamentales:
 
 \subsection{1. Servicios del Sistema Operativo}
@@ -170,13 +178,13 @@ Se interceptan y conmutan a estado \texttt{Disabled} los servicios responsables 
 \begin{itemize}
     \item \texttt{DiagTrack} (\textit{Connected User Experiences and Telemetry}): Agente principal de monitorización y registro de eventos de uso.
     \item \texttt{dmwappushservice}: Enrutador del protocolo WAP para el transporte telemétrico de diagnósticos hacia la infraestructura del fabricante.
-    \item \texttt{diagnosticshub.standardcollector.service}: Colector estándar de eventos en tiempo real.
+    \item \texttt{diagnosticshub.\allowbreak standardcollector.\allowbreak service}: Colector estándar de eventos en tiempo real.
 \end{itemize}
 
 \subsection{2. Directivas del Registro (Group Policies y Privacidad)}
 Dado que Windows reactiva periódicamente ciertos servicios tras actualizaciones acumulativas si no existen directivas explícitas, el script inyecta configuraciones persistentes en las ramas \texttt{HKLM} y \texttt{HKCU}:
 \begin{itemize}
-    \item \textbf{Recolección de Datos}: Establece las claves \texttt{AllowTelemetry = 0} y \texttt{MaxTelemetryAllowed = 0} bajo el árbol \texttt{SOFTWARE\textbackslash Policies\textbackslash Microsoft\textbackslash Windows\textbackslash DataCollection}.
+    \item \textbf{Recolección de Datos}: Establece las claves \texttt{AllowTelemetry = 0} y \texttt{MaxTelemetryAllowed = 0} bajo el árbol \path{SOFTWARE\Policies\Microsoft\Windows\DataCollection}.
     \item \textbf{Publicidad e Identificadores}: Inhabilita el identificador publicitario unificado (\texttt{AdvertisingInfo\textbackslash Enabled = 0}).
     \item \textbf{Integración Web y Cortana}: Restringe las consultas de búsqueda del Menú Inicio a nivel exclusivamente local (\texttt{BingSearchEnabled = 0}, \texttt{DisableWebSearch = 1}), evitando la transmisión de pulsaciones de teclado hacia Bing.
     \item \textbf{Historial de Actividad}: Bloquea la subida de eventos de usuario a la nube (\texttt{UploadUserActivities = 0}).
