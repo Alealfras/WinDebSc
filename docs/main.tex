@@ -60,14 +60,12 @@
 % --- Portada ---
 \begin{titlepage}
     \centering
-    \vspace*{1cm}
-    {\scshape\LARGE Universidad de Ingeniería \par}
     \vspace{1cm}
-    {\scshape\Large Trabajo de Fin de Grado\par}
+    {\scshape\Large T*******************o\par}
     \vspace{1.5cm}
     {\huge\bfseries WinDebSc: Herramienta de Automatización y Optimización de Windows en Java \par}
     \vspace{2cm}
-    {\Large\itshape Autor: Alealfras\par}
+    {\Large\itshape Autor: Alejandro Leal Frasquet\par}
     \vspace{0.5cm}
     {\large Grado en Ingeniería Informática\par}
     \vfill
@@ -173,7 +171,7 @@ return process.waitFor();
 \section[Módulo de Optimización de Telemetría]{Módulo de Optimización de Telemetría\\ \large(\texttt{disable-telemetry.ps1})}
 La erradicación de los mecanismos de telemetría en sistemas Windows constituye uno de los pilares centrales del proceso de \textit{debloating}. El script \texttt{disable-telemetry.ps1} implementa una estrategia por capas dividida en tres ejes fundamentales:
 
-\subsection{1. Servicios del Sistema Operativo}
+\subsection{Servicios del Sistema Operativo}
 Se interceptan y conmutan a estado \texttt{Disabled} los servicios responsables de la telemetría activa en memoria:
 \begin{itemize}
     \item \texttt{DiagTrack} (\textit{Connected User Experiences and Telemetry}): Agente principal de monitorización y registro de eventos de uso.
@@ -181,7 +179,7 @@ Se interceptan y conmutan a estado \texttt{Disabled} los servicios responsables 
     \item \texttt{diagnosticshub.\allowbreak standardcollector.\allowbreak service}: Colector estándar de eventos en tiempo real.
 \end{itemize}
 
-\subsection{2. Directivas del Registro (Group Policies y Privacidad)}
+\subsection{Directivas del Registro (Group Policies y Privacidad)}
 Dado que Windows reactiva periódicamente ciertos servicios tras actualizaciones acumulativas si no existen directivas explícitas, el script inyecta configuraciones persistentes en las ramas \texttt{HKLM} y \texttt{HKCU}:
 \begin{itemize}
     \item \textbf{Recolección de Datos}: Establece las claves \texttt{AllowTelemetry = 0} y \texttt{MaxTelemetryAllowed = 0} bajo el árbol \path{SOFTWARE\Policies\Microsoft\Windows\DataCollection}.
@@ -190,7 +188,7 @@ Dado que Windows reactiva periódicamente ciertos servicios tras actualizaciones
     \item \textbf{Historial de Actividad}: Bloquea la subida de eventos de usuario a la nube (\texttt{UploadUserActivities = 0}).
 \end{itemize}
 
-\subsection{3. Tareas Programadas de Mantenimiento}
+\subsection{Tareas Programadas de Mantenimiento}
 Se cancela la ejecución periódica de rutinas en segundo plano encargadas del envío periódico de informes mediante \texttt{Disable-ScheduledTask}:
 \begin{itemize}
     \item \texttt{Microsoft Compatibility Appraiser}: Proceso de alta intensidad de I/O y CPU que analiza la compatibilidad del software del usuario.
@@ -201,14 +199,14 @@ Se cancela la ejecución periódica de rutinas en segundo plano encargadas del e
 \section[Módulo de Eliminación Profunda de Bloatware]{Módulo de Eliminación Profunda de Bloatware\\ \large(\texttt{remove-bloatware.ps1})}
 La erradicación exhaustiva de aplicaciones UWP (\textit{Universal Windows Platform}) abarca tanto las utilidades accesorias como los servicios de distribución comercial del sistema operativo, incluida la propia tienda (\texttt{Microsoft.WindowsStore}). Para lograr una limpieza profunda sin comprometer la integridad ni la estabilidad del sistema, el script \texttt{remove-bloatware.ps1} implementa un filtrado estricto basado en una lista blanca de componentes críticos del núcleo (\textit{Core Whitelist}).
 
-\subsection{1. Anatomía del Empaquetado UWP: Paquetes de Usuario vs. Aprovisionados}
+\subsection{Anatomía del Empaquetado UWP: Paquetes de Usuario vs. Aprovisionados}
 En los sistemas Windows modernos coexisten dos capas de persistencia para el software empaquetado:
 \begin{enumerate}
     \item \textbf{Paquetes Aprovisionados (\textit{Provisioned Packages})}: Constituyen las imágenes maestras almacenadas a nivel de sistema mediante \path{Get-AppxProvisionedPackage}. Si no se eliminan estas plantillas, Windows reinstala automáticamente el software al registrar un nuevo usuario o tras actualizaciones mayores del sistema operativo.
     \item \textbf{Paquetes de Usuario (\textit{User Packages})}: Instancias activas desplegadas en el espacio de usuario (\path{Get-AppxPackage -AllUsers}).
 \end{enumerate}
 
-\subsection{2. Preservación de la Estabilidad del Sistema (Lista Blanca)}
+\subsection{Preservación de la Estabilidad del Sistema (Lista Blanca)}
 La eliminación ciega de todos los paquetes AppX ocasiona fallos catastróficos en el explorador de Windows, el inicio de sesión y la representación gráfica. Por ello, el script aísla y protege los siguientes subsistemas fundamentales:
 \begin{itemize}
     \item \textbf{Interfaz de Usuario y Shell}: \path{ShellExperienceHost}, \path{StartMenuExperienceHost} y \path{Search}.
