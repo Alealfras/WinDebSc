@@ -1,7 +1,9 @@
 package com.windebsc;
 
 import com.windebsc.core.ScriptRunner;
+import com.windebsc.ui.MainWindow;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.Scanner;
 
@@ -10,17 +12,42 @@ public class Main {
     private static final ScriptRunner runner = new ScriptRunner();
 
     public static void main(String[] args) {
-        System.out.println("==================================================");
-        System.out.println("                   WinDebSc                       ");
-        System.out.println("==================================================");
+        // Si se pasa el argumento --cli, se utiliza el modo consola tradicional
+        if (args.length > 0 && "--cli".equalsIgnoreCase(args[0])) {
+            runConsoleMode();
+            return;
+        }
 
-        // Si se pasa una ruta como argumento, se ejecuta directamente
-        if (args.length > 0) {
+        // Si se pasa la ruta de un script directamente como argumento
+        if (args.length > 0 && !args[0].startsWith("-")) {
             executeScript(new File(args[0]));
             return;
         }
 
-        // Modo interactivo en consola
+        // Por defecto: Iniciar la interfaz grafica (GUI)
+        launchGui();
+    }
+
+    private static void launchGui() {
+        // Establecer el aspecto nativo del sistema operativo (Windows)
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ignored) {
+            // Si falla, se utiliza el aspecto estandar de Java
+        }
+
+        // Iniciar en el hilo de eventos de Swing (EDT)
+        SwingUtilities.invokeLater(() -> {
+            MainWindow window = new MainWindow();
+            window.setVisible(true);
+        });
+    }
+
+    private static void runConsoleMode() {
+        System.out.println("==================================================");
+        System.out.println("                   WinDebSc                       ");
+        System.out.println("==================================================");
+
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
 

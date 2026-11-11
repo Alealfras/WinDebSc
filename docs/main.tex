@@ -216,6 +216,26 @@ La eliminación ciega de todos los paquetes AppX ocasiona fallos catastróficos 
 
 Todas las aplicaciones restantes, tales como la Tienda de Windows, Xbox, Bing, Correo, Calendario, Cortana y aplicaciones promocionales de terceros, son purgadas sistemáticamente de ambas capas.
 
+\section[Interfaz Gráfica de Usuario]{Interfaz Gráfica de Usuario (GUI)}
+Para proporcionar una experiencia de usuario interactiva y accesible, se ha implementado una interfaz de escritorio modular basada en la biblioteca gráfica estándar \texttt{javax.swing} (\texttt{MainWindow.java}).
+
+\subsection{Diseño Visual y Aspecto Nativo}
+La ventana principal integra el aspecto visual nativo del sistema anfitrión mediante \texttt{UIManager.getSystemLookAndFeelClassName()}. La disposición de elementos se estructura mediante un diseño en dos paneles principales:
+\begin{enumerate}
+    \item \textbf{Panel Lateral de Módulos}: Contenedor vertical con los disparadores de cada tarea de optimización (\texttt{JButton}) y control de limpieza de registros.
+    \item \textbf{Consola Central Integrada}: Área de texto monoespaciada (\texttt{JTextArea}) con esquema de color oscuro de alta legibilidad, encapsulada en un contenedor con desplazamiento automático (\texttt{JScrollPane}) para la visualización del flujo de eventos en tiempo real.
+\end{enumerate}
+
+\subsection{Modelo de Concurrencia y Event Dispatch Thread (EDT)}
+En arquitecturas de interfaz de usuario en Java, las operaciones de dibujo y manejo de eventos residen exclusivamente en el hilo de despacho de eventos (\textit{Event Dispatch Thread} o EDT). La ejecución de procesos externos o scripts mediante llamadas bloqueantes en dicho hilo provocaría la congelación de la interfaz gráfica (\textit{UI freeze}).
+
+Para asegurar la fluidez y respuesta continua de la aplicación, \texttt{WinDebSc} implementa un modelo de ejecución asíncrona desacoplado:
+\begin{itemize}
+    \item La pulsación de cualquier botón de optimización despacha la tarea a un hilo secundario (\textit{Worker Thread}).
+    \item Los botones de acción se deshabilitan temporalmente durante el ciclo de vida del subproceso para prevenir condiciones de carrera o ejecuciones simultáneas conflictivas.
+    \item La salida producida por PowerShell se sincroniza y enruta de forma segura hacia el EDT mediante la primitiva \texttt{SwingUtilities.invokeLater}, garantizando consistencia en el estado visual del componente de registro.
+\end{itemize}
+
 \chapter{Pruebas y Validación}
 \section{Pruebas en Entorno Controlado (Máquina Virtual)}
 
