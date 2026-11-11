@@ -29,6 +29,7 @@ public class Main {
             System.out.println("Selecciona una opcion:");
             System.out.println("1. Crear punto de restauracion (restore-point.ps1)");
             System.out.println("2. Desactivar telemetria completa (disable-telemetry.ps1)");
+            System.out.println("3. Eliminar bloatware profundo (remove-bloatware.ps1)");
             System.out.println("0. Salir");
             System.out.print("> ");
 
@@ -40,6 +41,9 @@ public class Main {
                     break;
                 case "2":
                     executeScript(new File("scripts/disable-telemetry.ps1"));
+                    break;
+                case "3":
+                    executeScript(new File("scripts/remove-bloatware.ps1"));
                     break;
                 case "0":
                     System.out.println("Saliendo de WinDebSc...");
