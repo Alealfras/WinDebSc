@@ -216,6 +216,24 @@ La eliminación ciega de todos los paquetes AppX ocasiona fallos catastróficos 
 
 Todas las aplicaciones restantes, tales como la Tienda de Windows, Xbox, Bing, Correo, Calendario, Cortana y aplicaciones promocionales de terceros, son purgadas sistemáticamente de ambas capas.
 
+\section[Módulo de Optimización de Servicios]{Módulo de Optimización de Servicios\\ \large(\texttt{optimize-services.ps1})}
+Los sistemas operativos Windows configuran en arranque automático una serie de servicios secundarios heredados o de escasa aplicabilidad en entornos de usuario moderno. El script \texttt{optimize-services.ps1} interviene sobre estos componentes para liberar memoria residente y aminorar la superficie de ataque del sistema.
+
+\subsection{Justificación y Selección de Servicios}
+Se seleccionan componentes no críticos que operan en segundo plano:
+\begin{itemize}
+    \item \texttt{Fax}: Controlador para módems de fax analógico, tecnología obsoleta en estaciones de trabajo contemporáneas.
+    \item \texttt{MapsBroker}: Gestor de mapas descargados para navegación sin conexión vinculada a aplicaciones UWP.
+    \item \texttt{RetailDemo}: Mecanismo de demostración comercial concebido exclusivamente para equipos en exposición física de tiendas.
+    \item \texttt{wisvc} (\textit{Windows Insider Service}): Infraestructura de pruebas beta y telemetría de versiones preliminares.
+    \item \texttt{WerSvc} (\textit{Windows Error Reporting}): Módulo de volcado y subida telemétrica de reportes de cuelgues hacia los servidores centrales de Microsoft.
+    \item \texttt{RemoteRegistry}: Permite la manipulación remota del registro de Windows mediante llamadas de red; su desactivación supone una mejora sustancial de bastionado (\textit{hardening}) de seguridad.
+    \item \texttt{WdiServiceHost} y \texttt{WdiSystemHost}: Servicios de diagnóstico y recolección de trazas del sistema.
+\end{itemize}
+
+\subsection{Procedimiento de Desactivación Controlada}
+El script efectúa una consulta de estado mediante \path{Get-Service}. En caso de detectar que el servicio se encuentra activo, procede a su detención forzosa (\path{Stop-Service -Force}) y conmuta su tipología de inicio a deshabilitado (\path{Set-Service -StartupType Disabled}), evitando su reactivación en subsiguientes reinicios del equipo.
+
 \section[Interfaz Gráfica de Usuario]{Interfaz Gráfica de Usuario (GUI)}
 Para proporcionar una experiencia de usuario interactiva y accesible, se ha implementado una interfaz de escritorio modular basada en la biblioteca gráfica estándar \texttt{javax.swing} (\texttt{MainWindow.java}).
 

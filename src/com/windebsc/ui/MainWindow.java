@@ -18,6 +18,7 @@ public class MainWindow extends JFrame {
     private JButton btnRestorePoint;
     private JButton btnDisableTelemetry;
     private JButton btnRemoveBloatware;
+    private JButton btnOptimizeServices;
     private JButton btnClear;
 
     public MainWindow() {
@@ -57,6 +58,7 @@ public class MainWindow extends JFrame {
         btnRestorePoint = createActionButton("Crear Punto Restauracion", "scripts/restore-point.ps1");
         btnDisableTelemetry = createActionButton("Desactivar Telemetria", "scripts/disable-telemetry.ps1");
         btnRemoveBloatware = createActionButton("Eliminar Bloatware UWP", "scripts/remove-bloatware.ps1");
+        btnOptimizeServices = createActionButton("Optimizar Servicios", "scripts/optimize-services.ps1");
 
         actionsPanel.add(Box.createVerticalStrut(10));
         actionsPanel.add(btnRestorePoint);
@@ -64,6 +66,8 @@ public class MainWindow extends JFrame {
         actionsPanel.add(btnDisableTelemetry);
         actionsPanel.add(Box.createVerticalStrut(8));
         actionsPanel.add(btnRemoveBloatware);
+        actionsPanel.add(Box.createVerticalStrut(8));
+        actionsPanel.add(btnOptimizeServices);
         actionsPanel.add(Box.createVerticalGlue());
 
         // Boton para limpiar consola
@@ -153,6 +157,7 @@ public class MainWindow extends JFrame {
         btnRestorePoint.setEnabled(enabled);
         btnDisableTelemetry.setEnabled(enabled);
         btnRemoveBloatware.setEnabled(enabled);
+        btnOptimizeServices.setEnabled(enabled);
         btnClear.setEnabled(enabled);
     }
 }
