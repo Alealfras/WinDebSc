@@ -19,6 +19,7 @@ public class MainWindow extends JFrame {
     private JButton btnDisableTelemetry;
     private JButton btnRemoveBloatware;
     private JButton btnOptimizeServices;
+    private JButton btnDisableBingCopilot;
     private JButton btnClear;
 
     public MainWindow() {
@@ -59,6 +60,7 @@ public class MainWindow extends JFrame {
         btnDisableTelemetry = createActionButton("Desactivar Telemetria", "scripts/disable-telemetry.ps1");
         btnRemoveBloatware = createActionButton("Eliminar Bloatware UWP", "scripts/remove-bloatware.ps1");
         btnOptimizeServices = createActionButton("Optimizar Servicios", "scripts/optimize-services.ps1");
+        btnDisableBingCopilot = createActionButton("Desactivar Bing / Copilot", "scripts/disable-bing-copilot.ps1");
 
         actionsPanel.add(Box.createVerticalStrut(10));
         actionsPanel.add(btnRestorePoint);
@@ -68,6 +70,8 @@ public class MainWindow extends JFrame {
         actionsPanel.add(btnRemoveBloatware);
         actionsPanel.add(Box.createVerticalStrut(8));
         actionsPanel.add(btnOptimizeServices);
+        actionsPanel.add(Box.createVerticalStrut(8));
+        actionsPanel.add(btnDisableBingCopilot);
         actionsPanel.add(Box.createVerticalGlue());
 
         // Boton para limpiar consola
@@ -158,6 +162,7 @@ public class MainWindow extends JFrame {
         btnDisableTelemetry.setEnabled(enabled);
         btnRemoveBloatware.setEnabled(enabled);
         btnOptimizeServices.setEnabled(enabled);
+        btnDisableBingCopilot.setEnabled(enabled);
         btnClear.setEnabled(enabled);
     }
 }

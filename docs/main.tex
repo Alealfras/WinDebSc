@@ -234,6 +234,26 @@ Se seleccionan componentes no críticos que operan en segundo plano:
 \subsection{Procedimiento de Desactivación Controlada}
 El script efectúa una consulta de estado mediante \path{Get-Service}. En caso de detectar que el servicio se encuentra activo, procede a su detención forzosa (\path{Stop-Service -Force}) y conmuta su tipología de inicio a deshabilitado (\path{Set-Service -StartupType Disabled}), evitando su reactivación en subsiguientes reinicios del equipo.
 
+\section[Módulo de Bing, Copilot y Widgets]{Módulo de Desactivación de Bing, Copilot y Widgets\\ \large(\texttt{disable-bing-copilot.ps1})}
+En las versiones contemporáneas de Windows (10 y 11), la interfaz del sistema operativo ha integrado servicios basados en la nube y componentes de inteligencia artificial que operan de forma persistente en primer y segundo plano. El módulo \texttt{disable-bing-copilot.ps1} interviene para restaurar el comportamiento puramente local del explorador, salvaguardar la privacidad de las consultas y suprimir procesos residentes innecesarios.
+
+\subsection{Justificación Técnica y de Privacidad}
+Se abordan tres vectores principales de degradación de privacidad y rendimiento:
+\begin{itemize}
+    \item \textbf{Windows Copilot}: Asistente integrado basado en modelos generativos que se ejecuta encapsulado en procesos web y mantiene ganchos (\textit{hooks}) activos en la barra de tareas y el explorador del sistema.
+    \item \textbf{Consultas Web de Bing en el Menú Inicio}: Por defecto, cualquier término introducido en la barra de búsqueda local transmite paquetes de red en tiempo real a los servidores centrales de Bing para proveer sugerencias comerciales y resultados web, exponiendo metadatos de nombres de archivos locales y consumiendo ancho de banda.
+    \item \textbf{Widgets y Feeds de Noticias}: Tanto en Windows 10 (\textit{News and Interests}) como en Windows 11 (\textit{Widgets Panel}), este componente lanza múltiples instancias de \texttt{msedgewebview2.exe} que permanecen en segundo plano devorando entre 200 y 400 MB de memoria RAM sin intervención del usuario.
+\end{itemize}
+
+\subsection{Políticas de Grupo y Modificaciones del Registro}
+Para erradicar estos componentes de manera reversible y persistente a través de actualizaciones, el script configura las siguientes directivas de alto nivel:
+\begin{itemize}
+    \item \textbf{Copilot}: Se fija \texttt{TurnOffWindowsCopilot = 1} bajo la ruta \path{SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot} (en \texttt{HKLM} y \texttt{HKCU}), e inyecta \texttt{ShowCopilotButton = 0} en \path{Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced}.
+    \item \textbf{Búsqueda Local Estricta}: Establece \texttt{BingSearchEnabled = 0}, \texttt{DisableSearchBoxSuggestions = 1} y \texttt{DisableWebSearch = 1} en el árbol de búsqueda de Windows, forzando la indexación exclusivamente sobre el sistema de archivos local.
+    \item \textbf{Inhibición de Feeds y Dsh}: Configura \texttt{AllowNewsAndInterests = 0} bajo \path{SOFTWARE\Policies\Microsoft\Dsh} y oculta su anclaje en el explorador mediante \texttt{TaskbarDa = 0}.
+    \item \textbf{Contenido Promocionado (Content Delivery)}: Desactiva sugerencias patrocinadas en menús y pantalla de bloqueo (\texttt{SystemPaneSuggestionsEnabled = 0}, \texttt{SoftLandingEnabled = 0}) dentro de \path{Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager}.
+\end{itemize}
+
 \section[Interfaz Gráfica de Usuario]{Interfaz Gráfica de Usuario (GUI)}
 Para proporcionar una experiencia de usuario interactiva y accesible, se ha implementado una interfaz de escritorio modular basada en la biblioteca gráfica estándar \texttt{javax.swing} (\texttt{MainWindow.java}).
 
