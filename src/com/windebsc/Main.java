@@ -54,6 +54,7 @@ public class Main {
         while (running) {
             System.out.println();
             System.out.println("Selecciona una opcion:");
+            System.out.println("--- Modulos de Debloat y Optimizacion ---");
             System.out.println("1. Crear punto de restauracion (restore-point.ps1)");
             System.out.println("2. Desactivar telemetria completa (disable-telemetry.ps1)");
             System.out.println("3. Eliminar bloatware profundo (remove-bloatware.ps1)");
@@ -63,6 +64,12 @@ public class Main {
             System.out.println("7. Optimizar red y ancho de banda (optimize-network.ps1)");
             System.out.println("8. Gestionar Microsoft Edge (manage-edge.ps1)");
             System.out.println("9. Optimizar rendimiento visual y gaming (optimize-performance-visuals.ps1)");
+            System.out.println();
+            System.out.println("--- Modulos de Configuracion y Utilidades ---");
+            System.out.println("10. Configurar Explorador de Windows (configure-explorer.ps1)");
+            System.out.println("11. Configurar Plan de Energia y Rendimiento (configure-power-plan.ps1)");
+            System.out.println("12. Configurar Windows Update (configure-windows-update.ps1)");
+            System.out.println("13. Alternar Modo Oscuro / Modo Claro (configure-theme-dark.ps1)");
             System.out.println("0. Salir");
             System.out.print("> ");
 
@@ -95,6 +102,18 @@ public class Main {
                     break;
                 case "9":
                     executeScript(new File("scripts/optimize-performance-visuals.ps1"));
+                    break;
+                case "10":
+                    executeScript(new File("scripts/configure-explorer.ps1"));
+                    break;
+                case "11":
+                    executeScript(new File("scripts/configure-power-plan.ps1"));
+                    break;
+                case "12":
+                    executeScript(new File("scripts/configure-windows-update.ps1"));
+                    break;
+                case "13":
+                    executeScript(new File("scripts/configure-theme-dark.ps1"));
                     break;
                 case "0":
                     System.out.println("Saliendo de WinDebSc...");

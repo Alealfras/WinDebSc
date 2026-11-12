@@ -6,15 +6,20 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Ventana principal de la aplicacion WinDebSc.
+ * Organiza las funciones en dos secciones: Debloat/Optimizacion y Configuracion/Utilidades.
  * Utiliza ejecucion asincrona para mantener la interfaz receptiva durante la ejecucion de scripts.
  */
 public class MainWindow extends JFrame {
 
     private final ScriptRunner runner = new ScriptRunner();
     private JTextArea consoleArea;
+
+    // Seccion 1: Debloat y Optimizacion
     private JButton btnRestorePoint;
     private JButton btnDisableTelemetry;
     private JButton btnRemoveBloatware;
@@ -24,13 +29,21 @@ public class MainWindow extends JFrame {
     private JButton btnOptimizeNetwork;
     private JButton btnOptimizeVisuals;
     private JButton btnManageEdge;
+
+    // Seccion 2: Configuracion y Utilidades
+    private JButton btnConfigureExplorer;
+    private JButton btnConfigurePower;
+    private JButton btnConfigureWindowsUpdate;
+    private JToggleButton switchDarkMode;
+
+    // Control global
     private JButton btnClear;
 
     public MainWindow() {
-        setTitle("WinDebSc - Suite de Optimizacion Windows");
+        setTitle("WinDebSc - Suite de Optimizacion y Configuracion Windows");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(860, 720);
-        setMinimumSize(new Dimension(650, 560));
+        setSize(900, 660);
+        setMinimumSize(new Dimension(750, 500));
         setLocationRelativeTo(null);
 
         initComponents();
@@ -46,7 +59,7 @@ public class MainWindow extends JFrame {
         JLabel titleLabel = new JLabel("WinDebSc");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
 
-        JLabel subtitleLabel = new JLabel("Herramienta de automatizacion, privacidad y optimizacion de Windows");
+        JLabel subtitleLabel = new JLabel("Herramienta de automatizacion, privacidad, optimizacion y configuracion de Windows");
         subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         subtitleLabel.setForeground(Color.DARK_GRAY);
 
@@ -54,11 +67,17 @@ public class MainWindow extends JFrame {
         headerPanel.add(subtitleLabel, BorderLayout.SOUTH);
         mainPanel.add(headerPanel, BorderLayout.NORTH);
 
-        // 2. Panel lateral izquierdo de acciones (Botones)
-        JPanel actionsPanel = new JPanel();
-        actionsPanel.setLayout(new BoxLayout(actionsPanel, BoxLayout.Y_AXIS));
-        actionsPanel.setPreferredSize(new Dimension(240, 0));
-        actionsPanel.setBorder(BorderFactory.createTitledBorder("Modulos de Optimizacion"));
+        // 2. Panel lateral con pestanas (Debloat/Optimizacion vs Configuracion/Utilidades)
+        JPanel leftPanel = new JPanel(new BorderLayout(0, 8));
+        leftPanel.setPreferredSize(new Dimension(270, 0));
+
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+
+        // --- PESTANA 1: DEBLOAT Y OPTIMIZACION ---
+        JPanel debloatPanel = new JPanel();
+        debloatPanel.setLayout(new BoxLayout(debloatPanel, BoxLayout.Y_AXIS));
+        debloatPanel.setBorder(new EmptyBorder(10, 8, 10, 8));
 
         btnRestorePoint = createActionButton("Crear Punto Restauracion", "scripts/restore-point.ps1");
         btnDisableTelemetry = createActionButton("Desactivar Telemetria", "scripts/disable-telemetry.ps1");
@@ -71,40 +90,86 @@ public class MainWindow extends JFrame {
 
         btnManageEdge = new JButton("Gestionar Microsoft Edge");
         btnManageEdge.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnManageEdge.setMaximumSize(new Dimension(220, 36));
+        btnManageEdge.setMaximumSize(new Dimension(240, 34));
         btnManageEdge.setFocusPainted(false);
         btnManageEdge.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         btnManageEdge.addActionListener(e -> promptEdgeAction());
 
-        actionsPanel.add(Box.createVerticalStrut(10));
-        actionsPanel.add(btnRestorePoint);
-        actionsPanel.add(Box.createVerticalStrut(8));
-        actionsPanel.add(btnDisableTelemetry);
-        actionsPanel.add(Box.createVerticalStrut(8));
-        actionsPanel.add(btnRemoveBloatware);
-        actionsPanel.add(Box.createVerticalStrut(8));
-        actionsPanel.add(btnOptimizeServices);
-        actionsPanel.add(Box.createVerticalStrut(8));
-        actionsPanel.add(btnDisableBingCopilot);
-        actionsPanel.add(Box.createVerticalStrut(8));
-        actionsPanel.add(btnCleanTempCache);
-        actionsPanel.add(Box.createVerticalStrut(8));
-        actionsPanel.add(btnOptimizeNetwork);
-        actionsPanel.add(Box.createVerticalStrut(8));
-        actionsPanel.add(btnOptimizeVisuals);
-        actionsPanel.add(Box.createVerticalStrut(8));
-        actionsPanel.add(btnManageEdge);
-        actionsPanel.add(Box.createVerticalGlue());
+        debloatPanel.add(btnRestorePoint);
+        debloatPanel.add(Box.createVerticalStrut(6));
+        debloatPanel.add(btnDisableTelemetry);
+        debloatPanel.add(Box.createVerticalStrut(6));
+        debloatPanel.add(btnRemoveBloatware);
+        debloatPanel.add(Box.createVerticalStrut(6));
+        debloatPanel.add(btnOptimizeServices);
+        debloatPanel.add(Box.createVerticalStrut(6));
+        debloatPanel.add(btnDisableBingCopilot);
+        debloatPanel.add(Box.createVerticalStrut(6));
+        debloatPanel.add(btnCleanTempCache);
+        debloatPanel.add(Box.createVerticalStrut(6));
+        debloatPanel.add(btnOptimizeNetwork);
+        debloatPanel.add(Box.createVerticalStrut(6));
+        debloatPanel.add(btnOptimizeVisuals);
+        debloatPanel.add(Box.createVerticalStrut(6));
+        debloatPanel.add(btnManageEdge);
+        debloatPanel.add(Box.createVerticalGlue());
 
-        // Boton para limpiar consola
+        JScrollPane debloatScroll = new JScrollPane(debloatPanel);
+        debloatScroll.setBorder(null);
+        debloatScroll.getVerticalScrollBar().setUnitIncrement(12);
+
+        tabbedPane.addTab("Debloat y Optimizacion", debloatScroll);
+
+        // --- PESTANA 2: CONFIGURACION Y UTILIDADES ---
+        JPanel configPanel = new JPanel();
+        configPanel.setLayout(new BoxLayout(configPanel, BoxLayout.Y_AXIS));
+        configPanel.setBorder(new EmptyBorder(12, 8, 12, 8));
+
+        btnConfigureExplorer = createActionButton("Explorador de Archivos", "scripts/configure-explorer.ps1");
+        btnConfigurePower = createActionButton("Energia y Rendimiento", "scripts/configure-power-plan.ps1");
+
+        btnConfigureWindowsUpdate = new JButton("Configurar Windows Update...");
+        btnConfigureWindowsUpdate.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnConfigureWindowsUpdate.setMaximumSize(new Dimension(240, 34));
+        btnConfigureWindowsUpdate.setFocusPainted(false);
+        btnConfigureWindowsUpdate.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        btnConfigureWindowsUpdate.addActionListener(e -> promptWindowsUpdateAction());
+
+        // Switch Modo Oscuro / Claro
+        JPanel switchPanel = new JPanel(new BorderLayout(5, 5));
+        switchPanel.setMaximumSize(new Dimension(240, 50));
+        switchPanel.setBorder(BorderFactory.createTitledBorder("Tema del Sistema"));
+
+        switchDarkMode = new JToggleButton("Modo Oscuro: [ OFF ]");
+        switchDarkMode.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        switchDarkMode.setFocusPainted(false);
+        switchDarkMode.addActionListener(e -> {
+            boolean isDark = switchDarkMode.isSelected();
+            switchDarkMode.setText(isDark ? "Modo Oscuro: [ ON ]" : "Modo Oscuro: [ OFF ]");
+            runScriptAsync(new File("scripts/configure-theme-dark.ps1"), "-Mode", isDark ? "Dark" : "Light");
+        });
+        switchPanel.add(switchDarkMode, BorderLayout.CENTER);
+
+        configPanel.add(btnConfigureExplorer);
+        configPanel.add(Box.createVerticalStrut(8));
+        configPanel.add(btnConfigurePower);
+        configPanel.add(Box.createVerticalStrut(8));
+        configPanel.add(btnConfigureWindowsUpdate);
+        configPanel.add(Box.createVerticalStrut(14));
+        configPanel.add(switchPanel);
+        configPanel.add(Box.createVerticalGlue());
+
+        tabbedPane.addTab("Configuracion", configPanel);
+
+        leftPanel.add(tabbedPane, BorderLayout.CENTER);
+
+        // Boton para limpiar consola al pie del panel lateral
         btnClear = new JButton("Limpiar Consola");
-        btnClear.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnClear.setMaximumSize(new Dimension(220, 32));
+        btnClear.setPreferredSize(new Dimension(240, 32));
         btnClear.addActionListener(e -> consoleArea.setText(""));
-        actionsPanel.add(btnClear);
-        actionsPanel.add(Box.createVerticalStrut(10));
+        leftPanel.add(btnClear, BorderLayout.SOUTH);
 
-        mainPanel.add(actionsPanel, BorderLayout.WEST);
+        mainPanel.add(leftPanel, BorderLayout.WEST);
 
         // 3. Consola central integrada (Salida de PowerShell en tiempo real)
         JPanel centerPanel = new JPanel(new BorderLayout());
@@ -116,7 +181,7 @@ public class MainWindow extends JFrame {
         consoleArea.setBackground(new Color(30, 30, 30));
         consoleArea.setForeground(new Color(220, 220, 220));
         consoleArea.setCaretColor(Color.WHITE);
-        consoleArea.setText("Bienvenido a WinDebSc.\nSelecciona una opcion para comenzar.\n\n");
+        consoleArea.setText("Bienvenido a WinDebSc.\nSelecciona una opcion o cambia de pestana para comenzar.\n\n");
 
         JScrollPane scrollPane = new JScrollPane(consoleArea);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -130,12 +195,58 @@ public class MainWindow extends JFrame {
     private JButton createActionButton(String text, String scriptPath) {
         JButton button = new JButton(text);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setMaximumSize(new Dimension(220, 36));
+        button.setMaximumSize(new Dimension(240, 34));
         button.setFocusPainted(false);
         button.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
         button.addActionListener(e -> runScriptAsync(new File(scriptPath)));
         return button;
+    }
+
+    /**
+     * Dialogo interactivo para seleccionar que directivas de Windows Update configurar.
+     */
+    private void promptWindowsUpdateAction() {
+        JCheckBox chkDrivers = new JCheckBox("Bloquear instalacion automatica de drivers (GPU, chipset)", true);
+        JCheckBox chkNotify = new JCheckBox("Modo notificar antes de descargar/instalar (evitar reinicios)", true);
+        JCheckBox chkReset = new JCheckBox("Restaurar configuracion por defecto de Windows", false);
+
+        chkReset.addActionListener(e -> {
+            boolean reset = chkReset.isSelected();
+            chkDrivers.setEnabled(!reset);
+            chkNotify.setEnabled(!reset);
+        });
+
+        JPanel panel = new JPanel(new GridLayout(0, 1, 6, 6));
+        panel.setBorder(new EmptyBorder(8, 8, 8, 8));
+        panel.add(new JLabel("Selecciona que directivas deseas aplicar a Windows Update:"));
+        panel.add(Box.createVerticalStrut(4));
+        panel.add(chkDrivers);
+        panel.add(chkNotify);
+        panel.add(chkReset);
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                panel,
+                "Configuracion de Windows Update",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            File script = new File("scripts/configure-windows-update.ps1");
+            if (chkReset.isSelected()) {
+                runScriptAsync(script, "-ResetDefaults");
+            } else {
+                List<String> args = new ArrayList<>();
+                if (chkDrivers.isSelected()) args.add("-ExcludeDrivers");
+                if (chkNotify.isSelected()) args.add("-NotifyOnly");
+
+                if (!args.isEmpty()) {
+                    runScriptAsync(script, args.toArray(new String[0]));
+                }
+            }
+        }
     }
 
     /**
@@ -237,6 +348,12 @@ public class MainWindow extends JFrame {
         btnOptimizeNetwork.setEnabled(enabled);
         btnOptimizeVisuals.setEnabled(enabled);
         btnManageEdge.setEnabled(enabled);
+
+        btnConfigureExplorer.setEnabled(enabled);
+        btnConfigurePower.setEnabled(enabled);
+        btnConfigureWindowsUpdate.setEnabled(enabled);
+        switchDarkMode.setEnabled(enabled);
+
         btnClear.setEnabled(enabled);
     }
 }

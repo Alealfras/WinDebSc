@@ -342,13 +342,44 @@ Para restaurar una respuesta inmediata y lineal, el módulo aplica las siguiente
     \item \textbf{Supresión de Sticky Keys}: Reconfigura las máscaras de bits en \path{Control Panel\Accessibility\StickyKeys} (fijando \texttt{Flags = "506"}) para desactivar los atajos accidentales sin comprometer el funcionamiento general del teclado.
 \end{enumerate}
 
+\section[Módulos de Configuración y Utilidades del Sistema]{Módulos de Configuración y Utilidades del Sistema}
+Para trascender el alcance de una herramienta reactiva de saneamiento y consolidarse como una plataforma integral de administración, \texttt{WinDebSc} incorpora un subsistema de configuración que asiste al usuario en la parametrización de directivas de usabilidad, gestión energética y control de actualizaciones.
+
+\subsection{Productividad y Seguridad en el Explorador (\texttt{configure-explorer.ps1})}
+Por defecto, las instalaciones de Windows ocultan las extensiones de archivos conocidos, facilitando vectores de compromiso donde binarios maliciosos enmascaran extensiones dobles (ej. \path{documento.pdf.exe}). El script interviene sobre las claves de usuario en \path{Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced}:
+\begin{itemize}
+    \item \textbf{Visibilidad de Extensiones y Elementos Ocultos}: Fija \texttt{HideFileExt = 0} y \texttt{Hidden = 1}, garantizando una inspección transparente del árbol de directorios.
+    \item \textbf{Apertura Directa}: Configura \texttt{LaunchTo = 1} para dirigir la apertura hacia \textit{Este equipo} en lugar de la vista agregada de \textit{Acceso Rápido}.
+    \item \textbf{Menú Contextual Clásico en Windows 11}: Registra la clave CLSID \path{{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32} vacía para restaurar el menú contextual tradicional directo sin el paso intermedio de \textit{Mostrar más opciones}.
+    \item \textbf{Reinicio del Shell}: Despacha un reinicio coordinado de \texttt{explorer.exe} para propagar los cambios inmediatamente en el entorno gráfico.
+\end{itemize}
+
+\subsection{Gestión de Energía y Liberación de Disco (\texttt{configure-power-plan.ps1})}
+La infraestructura de energía de Windows implementa algoritmos de modulación de frecuencia que pueden perjudicar la latencia en estaciones de trabajo:
+\begin{itemize}
+    \item \textbf{Esquema Máximo Rendimiento}: Desbloquea y activa el perfil oculto \textit{Ultimate Performance} (GUID \texttt{e9a42b02-d5df-448d-aa00-03f14749eb61}) mediante la utilidad nativa \texttt{powercfg}, minimizando los estados de micro-latencia en la CPU.
+    \item \textbf{Desactivación de Hibernación}: Ejecuta \path{powercfg -h off}, lo que purga inmediatamente el archivo de volcado continuo \path{hiberfil.sys} de la raíz de la unidad de arranque, recuperando entre 8 y 32~GB de almacenamiento útil (proporcional a la memoria RAM instalada).
+    \item \textbf{Alimentación Continua en Puertos USB}: Anula la suspensión selectiva en controladores USB para evitar desconexiones de periféricos e interfaces.
+\end{itemize}
+
+\subsection{Parametrización Selectiva de Windows Update (\texttt{configure-windows-update.ps1})}
+El script proporciona directivas modulares invocables selectivamente mediante parámetros:
+\begin{itemize}
+    \item \textbf{Exclusión de Controladores}: Establece \texttt{ExcludeWUDriversInQualityUpdate = 1} bajo la rama de políticas de Windows Update, evitando que los parches del sistema sobreescriban controladores específicos de GPU o chipsets por versiones genéricas.
+    \item \textbf{Modo Notificación Previa}: Configura \texttt{AUOptions = 2} e inyecta \texttt{NoAutoRebootWithLoggedOnUsers = 1}, garantizando que el usuario conserve la potestad sobre cuándo desplegar actualizaciones y erradicando reinicios automáticos intempestivos con sesiones de trabajo activas.
+\end{itemize}
+
+\subsection{Conmutación de Esquema de Color (\texttt{configure-theme-dark.ps1})}
+Permite conmutar programáticamente el tema visual mediante la actualización de los valores DWORD \texttt{AppsUseLightTheme} y \texttt{SystemUsesLightTheme} bajo \path{Software\Microsoft\Windows\CurrentVersion\Themes\Personalize}, sincronizando aplicaciones UWP, barra de tareas y explorador del sistema.
+
 \section[Interfaz Gráfica de Usuario]{Interfaz Gráfica de Usuario (GUI)}
 Para proporcionar una experiencia de usuario interactiva y accesible, se ha implementado una interfaz de escritorio modular basada en la biblioteca gráfica estándar \texttt{javax.swing} (\texttt{MainWindow.java}).
 
-\subsection{Diseño Visual y Aspecto Nativo}
-La ventana principal integra el aspecto visual nativo del sistema anfitrión mediante \texttt{UIManager.getSystemLookAndFeelClassName()}. La disposición de elementos se estructura mediante un diseño en dos paneles principales:
+\subsection{Diseño Visual y Organización en Pestañas Funcionales}
+La ventana principal integra el aspecto visual nativo del sistema anfitrión mediante \texttt{UIManager.getSystemLookAndFeelClassName()}. Para mantener una jerarquía clara a medida que el catálogo de herramientas ha crecido, la interfaz organiza sus funciones mediante un contenedor con pestañas (\texttt{JTabbedPane}):
 \begin{enumerate}
-    \item \textbf{Panel Lateral de Módulos}: Contenedor vertical con los disparadores de cada tarea de optimización (\texttt{JButton}) y control de limpieza de registros.
+    \item \textbf{Pestaña de Debloat y Optimización}: Agrupa los 9 disparadores de saneamiento, privacidad profunda y supresión de componentes prescindibles, incluyendo el control modal de Microsoft Edge.
+    \item \textbf{Pestaña de Configuración y Utilidades}: Contiene los accesos a directivas de explorador, energía, el cuadro interactivo de Windows Update y el conmutador (\textit{switch} tipo \texttt{JToggleButton}) para el Modo Oscuro.
     \item \textbf{Consola Central Integrada}: Área de texto monoespaciada (\texttt{JTextArea}) con esquema de color oscuro de alta legibilidad, encapsulada en un contenedor con desplazamiento automático (\texttt{JScrollPane}) para la visualización del flujo de eventos en tiempo real.
 \end{enumerate}
 
