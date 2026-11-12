@@ -34,6 +34,7 @@
 3. **`remove-bloatware.ps1`**: Purgado dual de paquetes AppX (espacio de usuario y aprovisionados con `Get-AppxProvisionedPackage`), implementando una **lista blanca de seguridad** estricta para salvaguardar el Shell (`ShellExperienceHost`, `StartMenu`), autenticación (`CloudExperienceHost`, `AccountsControl`) y runtimes esenciales (`VCLibs`, `UI.Xaml`).
 4. **`optimize-services.ps1`**: Detección y desactivación controlada (`Set-Service -StartupType Disabled`) de servicios prescindibles (`Fax`, `RetailDemo`, `MapsBroker`, `wisvc`, `WerSvc`, `RemoteRegistry`, `WdiServiceHost`).
 5. **`disable-bing-copilot.ps1`**: Desactivación de Windows Copilot, búsqueda web con Bing en el menú Inicio (modo local puro), paneles de Widgets / Noticias (`Dsh` y WebView2 en segundo plano) y sugerencias comerciales.
+6. **`clean-temp-cache.ps1`**: Saneamiento y mantenimiento de almacenamiento: purga segura de temporales de usuario y sistema, detención orquestada de `wuauserv` para vaciar caché acumulada de Windows Update, purga de informes WER y minidumps, y vaciado de la papelera en todas las unidades.
 
 ### B. Aplicación Java (`src/com/windebsc/`)
 * **`core/ScriptRunner.java`**: Ejecución de procesos PowerShell (`powershell.exe -ExecutionPolicy Bypass -File ...`) con captura de flujos estándar y error en tiempo real.

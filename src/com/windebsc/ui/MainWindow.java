@@ -20,13 +20,14 @@ public class MainWindow extends JFrame {
     private JButton btnRemoveBloatware;
     private JButton btnOptimizeServices;
     private JButton btnDisableBingCopilot;
+    private JButton btnCleanTempCache;
     private JButton btnClear;
 
     public MainWindow() {
         setTitle("WinDebSc - Suite de Optimizacion Windows");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(850, 550);
-        setMinimumSize(new Dimension(650, 400));
+        setSize(850, 600);
+        setMinimumSize(new Dimension(650, 450));
         setLocationRelativeTo(null);
 
         initComponents();
@@ -61,6 +62,7 @@ public class MainWindow extends JFrame {
         btnRemoveBloatware = createActionButton("Eliminar Bloatware UWP", "scripts/remove-bloatware.ps1");
         btnOptimizeServices = createActionButton("Optimizar Servicios", "scripts/optimize-services.ps1");
         btnDisableBingCopilot = createActionButton("Desactivar Bing / Copilot", "scripts/disable-bing-copilot.ps1");
+        btnCleanTempCache = createActionButton("Limpiar Temporales y Cache", "scripts/clean-temp-cache.ps1");
 
         actionsPanel.add(Box.createVerticalStrut(10));
         actionsPanel.add(btnRestorePoint);
@@ -72,6 +74,8 @@ public class MainWindow extends JFrame {
         actionsPanel.add(btnOptimizeServices);
         actionsPanel.add(Box.createVerticalStrut(8));
         actionsPanel.add(btnDisableBingCopilot);
+        actionsPanel.add(Box.createVerticalStrut(8));
+        actionsPanel.add(btnCleanTempCache);
         actionsPanel.add(Box.createVerticalGlue());
 
         // Boton para limpiar consola
@@ -163,6 +167,7 @@ public class MainWindow extends JFrame {
         btnRemoveBloatware.setEnabled(enabled);
         btnOptimizeServices.setEnabled(enabled);
         btnDisableBingCopilot.setEnabled(enabled);
+        btnCleanTempCache.setEnabled(enabled);
         btnClear.setEnabled(enabled);
     }
 }

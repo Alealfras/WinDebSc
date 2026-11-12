@@ -59,6 +59,7 @@ public class Main {
             System.out.println("3. Eliminar bloatware profundo (remove-bloatware.ps1)");
             System.out.println("4. Optimizar servicios del sistema (optimize-services.ps1)");
             System.out.println("5. Desactivar Bing, Copilot y Widgets (disable-bing-copilot.ps1)");
+            System.out.println("6. Limpiar temporales y cache del sistema (clean-temp-cache.ps1)");
             System.out.println("0. Salir");
             System.out.print("> ");
 
@@ -79,6 +80,9 @@ public class Main {
                     break;
                 case "5":
                     executeScript(new File("scripts/disable-bing-copilot.ps1"));
+                    break;
+                case "6":
+                    executeScript(new File("scripts/clean-temp-cache.ps1"));
                     break;
                 case "0":
                     System.out.println("Saliendo de WinDebSc...");
