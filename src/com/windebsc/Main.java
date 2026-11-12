@@ -62,6 +62,7 @@ public class Main {
             System.out.println("6. Limpiar temporales y cache del sistema (clean-temp-cache.ps1)");
             System.out.println("7. Optimizar red y ancho de banda (optimize-network.ps1)");
             System.out.println("8. Gestionar Microsoft Edge (manage-edge.ps1)");
+            System.out.println("9. Optimizar rendimiento visual y gaming (optimize-performance-visuals.ps1)");
             System.out.println("0. Salir");
             System.out.print("> ");
 
@@ -91,6 +92,9 @@ public class Main {
                     break;
                 case "8":
                     executeScript(new File("scripts/manage-edge.ps1"));
+                    break;
+                case "9":
+                    executeScript(new File("scripts/optimize-performance-visuals.ps1"));
                     break;
                 case "0":
                     System.out.println("Saliendo de WinDebSc...");

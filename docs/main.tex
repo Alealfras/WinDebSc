@@ -321,6 +321,27 @@ A través del parámetro \texttt{-Action}, el orquestador implementa los siguien
     \end{itemize}
 \end{enumerate}
 
+\section[Módulo de Rendimiento Visual y Gaming]{Módulo de Rendimiento Visual, Latencia y Gaming\\ \large(\texttt{optimize-performance-visuals.ps1})}
+La experiencia interactiva en Windows y la estabilidad en la tasa de refresco gráfica pueden verse degradadas por servicios de captura en segundo plano, curvas de aceleración artificial en los periféricos de entrada y retardos estéticos programados en el Administrador de Ventanas del Escritorio (\textit{Desktop Window Manager} o DWM). El script \texttt{optimize-performance-visuals.ps1} interviene para eliminar la latencia inducida y suprimir la contención de recursos.
+
+\subsection{Sobrecarga de Entrada y Contención de I/O por Game DVR}
+Se analizan los tres vectores principales de degradación de latencia:
+\begin{itemize}
+    \item \textbf{Captura Cíclica en Búfer (Windows Game DVR)}: Por omisión, el subsistema de juegos de Windows ejecuta en segundo plano un hilo de captura continua de vídeo y audio (\texttt{AppCaptureEnabled = 1}), almacenando un búfer rodante en la unidad de almacenamiento. Este proceso genera contención constante de operaciones de entrada/salida (I/O) en discos SSD/NVMe y causa caídas esporádicas en los tiempos de cuadro (\textit{micro-stuttering}) durante ejecuciones de alta demanda de GPU.
+    \item \textbf{Aceleración No Lineal del Ratón (\textit{Enhanced Pointer Precision})}: Transforma la cinemática del cursor aplicando un cálculo exponencial de aceleración en función de la velocidad física de desplazamiento. Dicha transformación altera la correspondencia 1:1 entre el sensor del periférico y los píxeles en pantalla, degradando la memoria muscular y la precisión en entornos gráficos o videojuegos.
+    \item \textbf{Latencia Deliberada del DWM y Retardo de Menús (\textit{MenuShowDelay})}: Windows incorpora un retardo artificial histórico de 400~ms previo al despliegue de menús contextuales y cascadas visuales, sumado a efectos de desvanecimiento (\textit{fading}) y sombras pesadas que aumentan el consumo de memoria gráfica en entornos modestos o máquinas virtuales.
+    \item \textbf{Interrupciones Accidentales de Accesibilidad}: La invocación reiterada de teclas modificadoras (como la pulsación de \texttt{Shift} 5 veces consecutivas) dispara avisos modales bloqueantes de \textit{Sticky Keys} que interrumpen el foco activo del usuario.
+\end{itemize}
+
+\subsection{Directivas de Registro y Optimización Cinemática}
+Para restaurar una respuesta inmediata y lineal, el módulo aplica las siguientes configuraciones en el registro:
+\begin{enumerate}
+    \item \textbf{Erradicación de Game DVR}: Deshabilita la captura en segundo plano en \path{System\GameConfigStore} (\texttt{GameDVR_Enabled = 0}) y bloquea globalmente el servicio mediante la directiva \texttt{AllowGameDVR = 0} en \path{SOFTWARE\Policies\Microsoft\Windows\GameDVR}.
+    \item \textbf{Respuesta Lineal 1:1 del Puntero}: Configura en cero los valores \texttt{MouseSpeed}, \texttt{MouseThreshold1} y \texttt{MouseThreshold2} bajo \path{Control Panel\Mouse}, suprimiendo cualquier curva de aceleración algorítmica.
+    \item \textbf{Anulación de Retardos de Menú y DWM}: Fija \texttt{MenuShowDelay = "0"} bajo \path{Control Panel\Desktop}, eliminando la latencia en la interfaz de usuario, y desactiva sombras y previsualizaciones pesadas en \path{Software\Microsoft\Windows\DWM}.
+    \item \textbf{Supresión de Sticky Keys}: Reconfigura las máscaras de bits en \path{Control Panel\Accessibility\StickyKeys} (fijando \texttt{Flags = "506"}) para desactivar los atajos accidentales sin comprometer el funcionamiento general del teclado.
+\end{enumerate}
+
 \section[Interfaz Gráfica de Usuario]{Interfaz Gráfica de Usuario (GUI)}
 Para proporcionar una experiencia de usuario interactiva y accesible, se ha implementado una interfaz de escritorio modular basada en la biblioteca gráfica estándar \texttt{javax.swing} (\texttt{MainWindow.java}).
 

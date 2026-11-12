@@ -22,14 +22,15 @@ public class MainWindow extends JFrame {
     private JButton btnDisableBingCopilot;
     private JButton btnCleanTempCache;
     private JButton btnOptimizeNetwork;
+    private JButton btnOptimizeVisuals;
     private JButton btnManageEdge;
     private JButton btnClear;
 
     public MainWindow() {
         setTitle("WinDebSc - Suite de Optimizacion Windows");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(860, 680);
-        setMinimumSize(new Dimension(650, 520));
+        setSize(860, 720);
+        setMinimumSize(new Dimension(650, 560));
         setLocationRelativeTo(null);
 
         initComponents();
@@ -66,6 +67,7 @@ public class MainWindow extends JFrame {
         btnDisableBingCopilot = createActionButton("Desactivar Bing / Copilot", "scripts/disable-bing-copilot.ps1");
         btnCleanTempCache = createActionButton("Limpiar Temporales y Cache", "scripts/clean-temp-cache.ps1");
         btnOptimizeNetwork = createActionButton("Optimizar Red / QoS", "scripts/optimize-network.ps1");
+        btnOptimizeVisuals = createActionButton("Rendimiento Visual y Gaming", "scripts/optimize-performance-visuals.ps1");
 
         btnManageEdge = new JButton("Gestionar Microsoft Edge");
         btnManageEdge.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -88,6 +90,8 @@ public class MainWindow extends JFrame {
         actionsPanel.add(btnCleanTempCache);
         actionsPanel.add(Box.createVerticalStrut(8));
         actionsPanel.add(btnOptimizeNetwork);
+        actionsPanel.add(Box.createVerticalStrut(8));
+        actionsPanel.add(btnOptimizeVisuals);
         actionsPanel.add(Box.createVerticalStrut(8));
         actionsPanel.add(btnManageEdge);
         actionsPanel.add(Box.createVerticalGlue());
@@ -231,6 +235,7 @@ public class MainWindow extends JFrame {
         btnDisableBingCopilot.setEnabled(enabled);
         btnCleanTempCache.setEnabled(enabled);
         btnOptimizeNetwork.setEnabled(enabled);
+        btnOptimizeVisuals.setEnabled(enabled);
         btnManageEdge.setEnabled(enabled);
         btnClear.setEnabled(enabled);
     }
