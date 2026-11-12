@@ -19,3 +19,6 @@ Inspirado en herramientas comunitarias como *WinUtil* de Chris Titus, este proye
 - **Java**: JDK 17 o superior (desarrollado con OpenJDK 26).
 - **Sistema Operativo**: Windows 10 / 11 (recomendado probar en máquina virtual).
 - **LaTeX**: Distribución MiKTeX o TeX Live (editor recomendado: TeXworks o VS Code).
+
+WIP
+<img width="735" height="415" alt="imagen" src="https://github.com/user-attachments/assets/67378d24-a2e1-45b6-b113-4ddf474c33fb" />
