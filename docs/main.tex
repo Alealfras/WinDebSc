@@ -274,6 +274,26 @@ La manipulación de directorios del sistema operativo requiere mecanismos de sin
     \item \textbf{Vaciado Multivolumen de la Papelera}: Ejecución de la primitiva nativa \path{Clear-RecycleBin -Force} para purgar las estructuras de papelera en todas las particiones del sistema.
 \end{enumerate}
 
+\section[Módulo de Optimización de Red y Ancho de Banda]{Módulo de Optimización de Red y Ancho de Banda\\ \large(\texttt{optimize-network.ps1})}
+La conectividad en los sistemas Windows modernos se encuentra condicionada por mecanismos telemétricos y de distribución distribuida de contenidos que pueden saturar la capacidad de enlace ascendente y degradar la latencia. El módulo \texttt{optimize-network.ps1} interviene sobre los componentes de red para suprimir el consumo opaco de ancho de banda y afinar la pila TCP/IP.
+
+\subsection{Distribución P2P no Consentida y Congestión de Enlace}
+Se abordan diversos factores de ineficiencia en el tráfico de red:
+\begin{itemize}
+    \item \textbf{Optimización de Entrega (\textit{Delivery Optimization} / \texttt{DoSvc})}: Servicio que transforma el ordenador del usuario en un nodo de red P2P (\textit{peer-to-peer}) encargado de redistribuir fragmentos de actualizaciones a terceros equipos a través de Internet. Esta difusión satura la velocidad de subida (\textit{upstream}) del enlace residencial, incrementando la fluctuación de fase (\textit{jitter}) y provocando problemas severos de \textit{bufferbloat}.
+    \item \textbf{Reserva Arbitraria de Ancho de Banda por QoS}: El programador de paquetes de red (\texttt{Psched}) mantiene configurada por omisión una reserva potencial de hasta el 20\% del ancho de banda disponible para aplicaciones con directivas de calidad de servicio, limitando el caudal utilizable por las aplicaciones de usuario.
+    \item \textbf{Túneles de Transición IPv6 Obsoletos}: Protocolos heredados de encapsulamiento (\texttt{Teredo}, \texttt{ISATAP} y \texttt{6to4}) que introducen retardos y contingencias de tiempo de espera (\textit{timeout}) durante las fases iniciales de resolución de nombres DNS en infraestructuras IPv4 nativas.
+\end{itemize}
+
+\subsection{Reconfiguración de Pila y Directivas de Red}
+El script aplica modificaciones a nivel de kernel y servicios de red mediante las siguientes acciones:
+\begin{enumerate}
+    \item \textbf{Desactivación de \texttt{DoSvc}}: Detención forzosa y deshabilitación del servicio \path{DoSvc}, complementado con la inyección de \texttt{DODownloadMode = 0} en las directivas del registro para limitar cualquier descarga de mantenimiento a transferencias HTTP directas cliente-servidor.
+    \item \textbf{Liberación de Ancho de Banda QoS}: Configuración del valor \texttt{NonBestEffortLimit = 0} bajo la directiva \path{SOFTWARE\Policies\Microsoft\Windows\Psched}, poniendo a disposición del usuario el 100\% del ancho de banda de la interfaz.
+    \item \textbf{Desactivación de Túneles e Habilitación de RSS}: Ejecución de comandos \texttt{netsh} para desmantelar las interfaces de túneles en desuso y activación del escalado en recepción (\textit{Receive-Side Scaling} o RSS), permitiendo la distribución balanceada de las interrupciones de red entre los distintos núcleos de la CPU.
+    \item \textbf{Saneamiento de la Caché DNS}: Purga inmediata de registros de resolución local mediante la primitiva \path{Clear-DnsClientCache}.
+\end{enumerate}
+
 \section[Interfaz Gráfica de Usuario]{Interfaz Gráfica de Usuario (GUI)}
 Para proporcionar una experiencia de usuario interactiva y accesible, se ha implementado una interfaz de escritorio modular basada en la biblioteca gráfica estándar \texttt{javax.swing} (\texttt{MainWindow.java}).
 
