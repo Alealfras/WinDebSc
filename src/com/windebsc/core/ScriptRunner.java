@@ -14,29 +14,45 @@ import java.util.function.Consumer;
 public class ScriptRunner {
 
     /**
-     * Ejecuta un script de PowerShell ubicado en el disco.
+     * Ejecuta un script de PowerShell ubicado en el disco sin argumentos adicionales.
+     */
+    public int runScript(File scriptFile, Consumer<String> outputListener) throws IOException, InterruptedException {
+        return runScript(scriptFile, new String[0], outputListener);
+    }
+
+    /**
+     * Ejecuta un script de PowerShell ubicado en el disco pasando argumentos opcionales.
      *
      * @param scriptFile Archivo .ps1 a ejecutar.
+     * @param args Argumentos de linea de comandos para el script.
      * @param outputListener Callback funcional para procesar la salida en tiempo real.
      * @return Codigo de salida del proceso (0 indica exito).
      * @throws IOException Si ocurre un fallo de E/S al arrancar el proceso.
      * @throws InterruptedException Si el hilo es interrumpido mientras espera al proceso.
      */
-    public int runScript(File scriptFile, Consumer<String> outputListener) throws IOException, InterruptedException {
+    public int runScript(File scriptFile, String[] args, Consumer<String> outputListener) throws IOException, InterruptedException {
         if (!scriptFile.exists()) {
             throw new IllegalArgumentException("El archivo de script no existe: " + scriptFile.getAbsolutePath());
         }
 
-        // Construccion del comando de PowerShell:
-        // -NoProfile: no carga los perfiles del usuario (arranque mucho mas rapido)
-        // -ExecutionPolicy Bypass: permite ejecutar el script sin alterar la politica global del sistema
-        // -File: ruta del script a ejecutar
-        ProcessBuilder processBuilder = new ProcessBuilder(
-                "powershell.exe",
-                "-NoProfile",
-                "-ExecutionPolicy", "Bypass",
-                "-File", scriptFile.getAbsolutePath()
-        );
+        // Construccion dinamica del comando de PowerShell
+        java.util.List<String> command = new java.util.ArrayList<>();
+        command.add("powershell.exe");
+        command.add("-NoProfile");
+        command.add("-ExecutionPolicy");
+        command.add("Bypass");
+        command.add("-File");
+        command.add(scriptFile.getAbsolutePath());
+
+        if (args != null) {
+            for (String arg : args) {
+                if (arg != null && !arg.isEmpty()) {
+                    command.add(arg);
+                }
+            }
+        }
+
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
 
         // Redirige los errores al mismo flujo de salida estandar para facilitar la lectura unificada
         processBuilder.redirectErrorStream(true);

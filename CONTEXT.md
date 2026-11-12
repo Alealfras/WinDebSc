@@ -36,6 +36,7 @@
 5. **`disable-bing-copilot.ps1`**: Desactivación de Windows Copilot, búsqueda web con Bing en el menú Inicio (modo local puro), paneles de Widgets / Noticias (`Dsh` y WebView2 en segundo plano) y sugerencias comerciales.
 6. **`clean-temp-cache.ps1`**: Saneamiento y mantenimiento de almacenamiento: purga segura de temporales de usuario y sistema, detención orquestada de `wuauserv` para vaciar caché acumulada de Windows Update, purga de informes WER y minidumps, y vaciado de la papelera en todas las unidades.
 7. **`optimize-network.ps1`**: Desactivación de subida P2P en Delivery Optimization (`DoSvc`), eliminación de reserva del 20% de ancho de banda QoS (`NonBestEffortLimit = 0`), activación de escalado multinúcleo RSS en TCP/IP, desmantelamiento de túneles obsoletos (Teredo, ISATAP, 6to4) y purga de caché DNS.
+8. **`manage-edge.ps1`**: Gestión modular paramétrica (`-Action <Debloat|Uninstall|Reinstall>`) de Microsoft Edge y restricción global de aplicaciones en segundo plano. Permite optimizar el navegador desactivando Startup Boost y procesos residentes, forzar su desinstalación bloqueando reinstalaciones automáticas por Windows Update, o reinstalarlo limpiamente desde fuentes oficiales.
 
 ### B. Aplicación Java (`src/com/windebsc/`)
 * **`core/ScriptRunner.java`**: Ejecución de procesos PowerShell (`powershell.exe -ExecutionPolicy Bypass -File ...`) con captura de flujos estándar y error en tiempo real.

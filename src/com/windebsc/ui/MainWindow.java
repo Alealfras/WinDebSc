@@ -22,13 +22,14 @@ public class MainWindow extends JFrame {
     private JButton btnDisableBingCopilot;
     private JButton btnCleanTempCache;
     private JButton btnOptimizeNetwork;
+    private JButton btnManageEdge;
     private JButton btnClear;
 
     public MainWindow() {
         setTitle("WinDebSc - Suite de Optimizacion Windows");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(850, 640);
-        setMinimumSize(new Dimension(650, 480));
+        setSize(860, 680);
+        setMinimumSize(new Dimension(650, 520));
         setLocationRelativeTo(null);
 
         initComponents();
@@ -66,6 +67,13 @@ public class MainWindow extends JFrame {
         btnCleanTempCache = createActionButton("Limpiar Temporales y Cache", "scripts/clean-temp-cache.ps1");
         btnOptimizeNetwork = createActionButton("Optimizar Red / QoS", "scripts/optimize-network.ps1");
 
+        btnManageEdge = new JButton("Gestionar Microsoft Edge");
+        btnManageEdge.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnManageEdge.setMaximumSize(new Dimension(220, 36));
+        btnManageEdge.setFocusPainted(false);
+        btnManageEdge.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        btnManageEdge.addActionListener(e -> promptEdgeAction());
+
         actionsPanel.add(Box.createVerticalStrut(10));
         actionsPanel.add(btnRestorePoint);
         actionsPanel.add(Box.createVerticalStrut(8));
@@ -80,6 +88,8 @@ public class MainWindow extends JFrame {
         actionsPanel.add(btnCleanTempCache);
         actionsPanel.add(Box.createVerticalStrut(8));
         actionsPanel.add(btnOptimizeNetwork);
+        actionsPanel.add(Box.createVerticalStrut(8));
+        actionsPanel.add(btnManageEdge);
         actionsPanel.add(Box.createVerticalGlue());
 
         // Boton para limpiar consola
@@ -125,9 +135,56 @@ public class MainWindow extends JFrame {
     }
 
     /**
+     * Ventana emergente interactiva para seleccionar la accion sobre Microsoft Edge.
+     */
+    private void promptEdgeAction() {
+        String[] options = {"Debloat / Optimizar", "Desinstalar", "Reinstalar", "Cancelar"};
+        int choice = JOptionPane.showOptionDialog(
+                this,
+                "¿Qué quieres hacer con Microsoft Edge?\n\n" +
+                "• Debloat: Desactiva aceleración de inicio, procesos de fondo y telemetría.\n" +
+                "• Desinstalar: Elimina Edge del sistema y bloquea su reinstalación por Windows Update.\n" +
+                "• Reinstalar: Descarga e instala la versión oficial limpia de Microsoft Edge.\n",
+                "Gestión de Microsoft Edge",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
+
+        File scriptFile = new File("scripts/manage-edge.ps1");
+
+        switch (choice) {
+            case 0:
+                runScriptAsync(scriptFile, "-Action", "Debloat");
+                break;
+            case 1:
+                int confirm = JOptionPane.showConfirmDialog(
+                        this,
+                        "¿Estás seguro de que deseas desinstalar Microsoft Edge?\n" +
+                        "Asegúrate de contar con otro navegador web instalado previamente.",
+                        "Confirmar desinstalación de Edge",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE
+                );
+                if (confirm == JOptionPane.YES_OPTION) {
+                    runScriptAsync(scriptFile, "-Action", "Uninstall");
+                }
+                break;
+            case 2:
+                runScriptAsync(scriptFile, "-Action", "Reinstall");
+                break;
+            default:
+                // Cancelar
+                break;
+        }
+    }
+
+    /**
      * Ejecuta el script en un hilo en segundo plano para evitar bloquear la interfaz grafica.
      */
-    private void runScriptAsync(File scriptFile) {
+    private void runScriptAsync(File scriptFile, String... args) {
         if (!scriptFile.exists()) {
             appendConsole("Error: No se encontro el archivo de script: " + scriptFile.getAbsolutePath() + "\n");
             return;
@@ -135,13 +192,14 @@ public class MainWindow extends JFrame {
 
         setButtonsEnabled(false);
         appendConsole("==================================================\n");
-        appendConsole("Ejecutando: " + scriptFile.getName() + "...\n");
+        String argsDisplay = (args != null && args.length > 0) ? " " + String.join(" ", args) : "";
+        appendConsole("Ejecutando: " + scriptFile.getName() + argsDisplay + "...\n");
         appendConsole("--------------------------------------------------\n");
 
         // Hilo de trabajo en segundo plano
         new Thread(() -> {
             try {
-                int exitCode = runner.runScript(scriptFile, line -> {
+                int exitCode = runner.runScript(scriptFile, args, line -> {
                     // Actualizacion segura en el hilo de interfaz (EDT)
                     SwingUtilities.invokeLater(() -> appendConsole(line + "\n"));
                 });
@@ -173,6 +231,7 @@ public class MainWindow extends JFrame {
         btnDisableBingCopilot.setEnabled(enabled);
         btnCleanTempCache.setEnabled(enabled);
         btnOptimizeNetwork.setEnabled(enabled);
+        btnManageEdge.setEnabled(enabled);
         btnClear.setEnabled(enabled);
     }
 }

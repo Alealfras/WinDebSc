@@ -294,6 +294,33 @@ El script aplica modificaciones a nivel de kernel y servicios de red mediante la
     \item \textbf{Saneamiento de la Caché DNS}: Purga inmediata de registros de resolución local mediante la primitiva \path{Clear-DnsClientCache}.
 \end{enumerate}
 
+\section[Módulo de Gestión de Microsoft Edge]{Módulo de Gestión de Microsoft Edge y Procesos de Fondo\\ \large(\texttt{manage-edge.ps1})}
+Microsoft Edge opera en Windows no solo como un navegador web independiente, sino como un subsistema profundamente entrelazado con el explorador y los servicios en la nube. Por defecto, implementa técnicas de precarga y ejecución persistente que consumen memoria RAM y ciclos de procesamiento en segundo plano incluso cuando el usuario ha cerrado la ventana de navegación o utiliza un navegador alternativo.
+
+El módulo \texttt{manage-edge.ps1} proporciona una solución paramétrica y modular que ofrece tres niveles de intervención controlada:
+
+\subsection{Modos de Operación y Arquitectura del Script}
+A través del parámetro \texttt{-Action}, el orquestador implementa los siguientes cursos de acción:
+\begin{enumerate}
+    \item \textbf{Debloat y Optimización de Procesos}:
+    \begin{itemize}
+        \item Desactiva el inicio rápido acelerado (\textit{Startup Boost}) fijando \texttt{StartupBoostEnabled = 0} en las directivas de Edge.
+        \item Impide la persistencia de subprocesos y extensiones durmientes tras el cierre (\texttt{BackgroundModeEnabled = 0}).
+        \item Suprime el reporte telemétrico y de personalización (\texttt{MetricsReportingEnabled = 0}, \texttt{SendSiteInfoToImproveServices = 0}).
+        \item Restringe a nivel de sistema la ejecución global de aplicaciones en segundo plano (\path{LetAppsRunInBackground = 2} y \texttt{GlobalUserDisabled = 1}).
+    \end{itemize}
+    \item \textbf{Desinstalación Forzada y Prevención de Reinstalación}:
+    \begin{itemize}
+        \item Debido a que Windows bloquea la desinstalación convencional desde la interfaz de usuario, el script localiza el binario nativo del instalador (\path{setup.exe}) dentro de los subdirectorios del sistema y despacha una llamada forzosa desatendida (\path{--uninstall --system-level --force-uninstall}).
+        \item Para evitar que Windows Update reinstale automáticamente el paquete en subsiguientes actualizaciones acumulativas, inyecta la directiva \texttt{DoNotUpdateToEdgeWithChromium = 1} bajo \path{HKLM\SOFTWARE\Microsoft\EdgeUpdate} y conmuta a estado deshabilitado los servicios de actualización (\texttt{edgeupdate} y \texttt{edgeupdatem}).
+    \end{itemize}
+    \item \textbf{Reinstalación Oficial Limpia}:
+    \begin{itemize}
+        \item Revierte las directivas de bloqueo de EdgeUpdate y reactiva los servicios asociados.
+        \item Despliega el navegador de forma oficial a través del gestor de paquetes de Windows (\path{winget install Microsoft.Edge}) o, en su defecto, mediante la descarga y ejecución silenciosa del instalador oficial firmado.
+    \end{itemize}
+\end{enumerate}
+
 \section[Interfaz Gráfica de Usuario]{Interfaz Gráfica de Usuario (GUI)}
 Para proporcionar una experiencia de usuario interactiva y accesible, se ha implementado una interfaz de escritorio modular basada en la biblioteca gráfica estándar \texttt{javax.swing} (\texttt{MainWindow.java}).
 
