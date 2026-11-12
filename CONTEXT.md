@@ -23,6 +23,7 @@
 ### Regla 3: Enfoque de Diseño y Funcionalidad
 * El foco actual es **100% funcionalidad, robustez y seguridad** de los scripts y del orquestador en Java.
 * El pulido estético final de la interfaz o posibles migraciones visuales se realizarán como **último paso del proyecto**, sin alterar la funcionalidad subyacente. *(Nota: No plasmar menciones sobre rediseños futuros en la memoria del repositorio).*
+* **Archivos temporales de desarrollo:** El script `run.sh` se incluye de forma provisional para permitir la ejecución y validación visual rápida de la interfaz en macOS/Linux durante la fase de desarrollo. **Debe eliminarse del repositorio al finalizar el proyecto antes del empaquetado final.**
 
 ---
 
