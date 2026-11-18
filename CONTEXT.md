@@ -54,13 +54,12 @@
 ### B. Aplicación Java (`src/com/windebsc/`)
 * **`core/ScriptRunner.java`**: Ejecución de procesos PowerShell con paso dinámico de argumentos y captura de flujos en tiempo real.
 * **`Main.java`**: Entrada dual: soporta modo consola estructurado en dos categorías (incluyendo opción `99` para ejecución completa) y modo gráfico con `--gui`.
-* **`ui/MainWindow.java`**: Interfaz gráfica en Swing organizada en **dos pestañas independientes** (`JTabbedPane`: *Debloat y Optimización* vs. *Configuración y Utilidades*), encabezada por el botón automatizado **«Hazlo por mí»** (con advertencia explícita y ejecución secuencial en hilo de fondo de los 10 módulos de debloteo), cuadros modales interactivos para Edge, OneDrive, Windows Update, Apps Esenciales y Privacidad Universal, además de un conmutador (*switch* `JToggleButton`) interactivo para alternar el Modo Oscuro.
+* **`ui/MainWindow.java`**, **`ui/GradientCard.java`**, **`ui/RoundedPanel.java`**: Interfaz gráfica moderna tipo **Dashboard** con *FlatLaf*, barra lateral oscura con navegación por vistas, buscador en vivo, 4 tarjetas con degradado, consola integrada, actividad reciente, botón automatizado **«Hazlo por mí»**, diálogos interactivos y switch de Modo Oscuro.
+* **Empaquetado nativo (`build-exe.ps1` y `.github/workflows/build-exe.yml`)**: Generación automática de `WinDebSc.exe` portable con `jpackage`, runtime embebido y manifiesto UAC.
 
 ### C. Memoria Académica (`docs/main.tex`)
-* Redactada la base teórica completa de arquitectura, los 10 scripts de debloat y los 6 módulos de configuración y utilidades antes de la sección de la GUI.
-* Secciones pendientes:
-  * `Capítulo: Pruebas y Validación` (Pruebas en máquina virtual).
-  * `Capítulo: Conclusiones y Trabajo Futuro`.
+* Redactada la memoria completa: arquitectura, los 10 scripts de debloat, los 6 módulos de configuración, diseño Dashboard + empaquetado `.exe`, metodología de pruebas en VM (con tabla comparativa lista para rellenar métricas reales) y conclusiones.
+* Pendiente únicamente: Rellenar la tabla de métricas en `docs/main.tex` tras probar `WinDebSc.exe` en Máquina Virtual, compilar el PDF final y eliminar `run.sh` antes de la entrega definitiva.
 
 ---
 
