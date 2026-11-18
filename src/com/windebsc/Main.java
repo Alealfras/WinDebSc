@@ -1,9 +1,11 @@
 package com.windebsc;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import com.windebsc.core.ScriptRunner;
 import com.windebsc.ui.MainWindow;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.util.Scanner;
 
@@ -29,11 +31,21 @@ public class Main {
     }
 
     private static void launchGui() {
-        // Establecer el aspecto nativo del sistema operativo (Windows)
+        // Configurar aspecto moderno FlatLaf para la interfaz Dashboard
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ignored) {
-            // Si falla, se utiliza el aspecto estandar de Java
+            UIManager.put("Button.arc", 12);
+            UIManager.put("Component.arc", 12);
+            UIManager.put("TextComponent.arc", 14);
+            UIManager.put("ScrollBar.thumbArc", 999);
+            UIManager.put("ScrollBar.width", 8);
+            UIManager.put("Component.accentColor", new Color(99, 102, 241));
+            FlatLightLaf.setup();
+        } catch (Exception ex) {
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception ignored) {
+                // Fallback al aspecto estandar de Java
+            }
         }
 
         // Iniciar en el hilo de eventos de Swing (EDT)

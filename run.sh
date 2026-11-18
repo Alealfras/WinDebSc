@@ -4,5 +4,5 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "$DIR"
 
 mkdir -p bin
-javac -d bin src/com/windebsc/**/*.java
-java -cp bin com.windebsc.Main
+javac -cp "lib/*" -d bin src/com/windebsc/**/*.java
+java -cp "bin:lib/*" com.windebsc.Main

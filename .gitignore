@@ -17,6 +17,7 @@ bin/
 target/
 build/
 *.jar
+!lib/*.jar
 *.war
 
 # --- LaTeX (TeXworks / TeXLive / MiKTeX) ---
