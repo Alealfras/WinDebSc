@@ -64,13 +64,16 @@ public class Main {
             System.out.println("7. Optimizar red y ancho de banda (optimize-network.ps1)");
             System.out.println("8. Gestionar Microsoft Edge (manage-edge.ps1)");
             System.out.println("9. Optimizar rendimiento visual y gaming (optimize-performance-visuals.ps1)");
+            System.out.println("10. Gestionar Microsoft OneDrive (manage-onedrive.ps1)");
+            System.out.println("99. [HAZLO POR MI] Ejecutar todo el bloque de debloat y optimizacion");
             System.out.println();
             System.out.println("--- Modulos de Configuracion y Utilidades ---");
-            System.out.println("10. Configurar Explorador de Windows (configure-explorer.ps1)");
-            System.out.println("11. Configurar Plan de Energia y Rendimiento (configure-power-plan.ps1)");
-            System.out.println("12. Configurar Windows Update (configure-windows-update.ps1)");
-            System.out.println("13. Alternar Modo Oscuro / Modo Claro (configure-theme-dark.ps1)");
-            System.out.println("14. Instalar aplicaciones esenciales (install-essentials.ps1)");
+            System.out.println("11. Configurar Explorador de Windows (configure-explorer.ps1)");
+            System.out.println("12. Configurar Plan de Energia y Rendimiento (configure-power-plan.ps1)");
+            System.out.println("13. Configurar Windows Update (configure-windows-update.ps1)");
+            System.out.println("14. Alternar Modo Oscuro / Modo Claro (configure-theme-dark.ps1)");
+            System.out.println("15. Instalar aplicaciones esenciales (install-essentials.ps1)");
+            System.out.println("16. Proteccion universal de privacidad (configure-privacy-permissions.ps1)");
             System.out.println("0. Salir");
             System.out.print("> ");
 
@@ -105,19 +108,41 @@ public class Main {
                     executeScript(new File("scripts/optimize-performance-visuals.ps1"));
                     break;
                 case "10":
-                    executeScript(new File("scripts/configure-explorer.ps1"));
+                    executeScript(new File("scripts/manage-onedrive.ps1"));
                     break;
                 case "11":
-                    executeScript(new File("scripts/configure-power-plan.ps1"));
+                    executeScript(new File("scripts/configure-explorer.ps1"));
                     break;
                 case "12":
-                    executeScript(new File("scripts/configure-windows-update.ps1"));
+                    executeScript(new File("scripts/configure-power-plan.ps1"));
                     break;
                 case "13":
-                    executeScript(new File("scripts/configure-theme-dark.ps1"));
+                    executeScript(new File("scripts/configure-windows-update.ps1"));
                     break;
                 case "14":
+                    executeScript(new File("scripts/configure-theme-dark.ps1"));
+                    break;
+                case "15":
                     executeScript(new File("scripts/install-essentials.ps1"));
+                    break;
+                case "16":
+                    executeScript(new File("scripts/configure-privacy-permissions.ps1"));
+                    break;
+                case "99":
+                    System.out.println("ADVERTENCIA: Se ejecutaran todos los scripts de debloat y optimizacion.");
+                    System.out.print("Confirmar (s/n): ");
+                    if ("s".equalsIgnoreCase(scanner.nextLine().trim())) {
+                        executeScript(new File("scripts/restore-point.ps1"));
+                        executeScript(new File("scripts/disable-telemetry.ps1"));
+                        executeScript(new File("scripts/remove-bloatware.ps1"));
+                        executeScript(new File("scripts/optimize-services.ps1"));
+                        executeScript(new File("scripts/disable-bing-copilot.ps1"));
+                        executeScript(new File("scripts/clean-temp-cache.ps1"));
+                        executeScript(new File("scripts/optimize-network.ps1"));
+                        executeScript(new File("scripts/optimize-performance-visuals.ps1"));
+                        executeScript(new File("scripts/manage-edge.ps1"), "-Action", "Debloat");
+                        executeScript(new File("scripts/manage-onedrive.ps1"), "-Action", "Debloat");
+                    }
                     break;
                 case "0":
                     System.out.println("Saliendo de WinDebSc...");
@@ -130,18 +155,19 @@ public class Main {
         }
     }
 
-    private static void executeScript(File script) {
+    private static void executeScript(File script, String... args) {
         if (!script.exists()) {
             System.err.println("No se encontro el script: " + script.getAbsolutePath());
             return;
         }
 
         System.out.println();
-        System.out.println("Ejecutando: " + script.getName() + "...");
+        String argsDisplay = (args != null && args.length > 0) ? " " + String.join(" ", args) : "";
+        System.out.println("Ejecutando: " + script.getName() + argsDisplay + "...");
         System.out.println("--------------------------------------------------");
 
         try {
-            int exitCode = runner.runScript(script, line -> {
+            int exitCode = runner.runScript(script, args, line -> {
                 System.out.println("  " + line);
             });
 

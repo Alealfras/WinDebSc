@@ -380,14 +380,29 @@ Tras un proceso de saneamiento o instalación limpia del sistema operativo, el u
     \item \textbf{Instalación Silenciosa y Verificada}: Invoca \path{winget install} con las banderas \path{--exact}, \path{--silent}, \path{--accept-package-agreements} y \path{--accept-source-agreements}, descargando binarios firmados directamente desde las fuentes oficiales del fabricante sin intervención manual.
 \end{itemize}
 
+\subsection{Bastionado Universal de Privacidad y Permisos (\texttt{configure-privacy-permissions.ps1})}
+El modelo de permisos de aplicaciones modernas en Windows gestiona el acceso a sensores y recursos sensibles mediante el almacén \textit{CapabilityAccessManager} (\texttt{ConsentStore}) y directivas de grupo bajo \texttt{AppPrivacy}. El script ofrece control granular mediante parámetros (\texttt{-BlockCamera}, \texttt{-BlockMicrophone}, \texttt{-BlockLocation}, \texttt{-BlockDiagnostics} y \texttt{-ResetDefaults}):
+\begin{itemize}
+    \item \textbf{Bloqueo en ConsentStore}: Establece el valor \texttt{Value = "Deny"} tanto en \texttt{HKLM} como en \texttt{HKCU} para los descriptores \texttt{webcam}, \texttt{microphone}, \texttt{location} y \texttt{appDiagnostics}.
+    \item \textbf{Directivas Forzosas de Privacidad}: Configura las claves \texttt{LetAppsAccessCamera}, \texttt{LetAppsAccessMicrophone}, \texttt{LetAppsAccessLocation} y \texttt{LetAppsGetDiagnosticInfo} al valor \texttt{2} (\textit{Force Deny}), impidiendo que aplicaciones en segundo plano o de terceros accedan a hardware sensible sin consentimiento expreso.
+\end{itemize}
+
+\section[Módulo de Gestión de OneDrive]{Módulo de Gestión de Microsoft OneDrive\\ \large(\texttt{manage-onedrive.ps1})}
+Al igual que Microsoft Edge, el cliente de sincronización en la nube \textit{OneDrive} se inicia de forma residente por defecto y ocupa espacio persistente en el árbol de navegación del Explorador. Siguiendo el patrón paramétrico del parámetro \texttt{-Action}, el módulo provee tres cursos de acción:
+\begin{enumerate}
+    \item \textbf{Debloat}: Detiene el proceso activo, elimina su entrada de arranque en \path{CurrentVersion\Run} e inyecta la directiva \texttt{DisableFileSyncNGSC = 1}.
+    \item \textbf{Desinstalación Completa}: Invoca el desinstalador nativo (\path{OneDriveSetup.exe /uninstall}), limpia directorios residuales de programa y oculta el nodo del Explorador fijando \texttt{System.IsPinnedToNameSpaceTree = 0} en el CLSID \path{{018D5C66-4533-4307-9B53-224DE2ED1FE6}}.
+    \item \textbf{Reinstalación Limpia}: Revierte las directivas y despliega el cliente oficial mediante \path{OneDriveSetup.exe} o \texttt{winget}.
+\end{enumerate}
+
 \section[Interfaz Gráfica de Usuario]{Interfaz Gráfica de Usuario (GUI)}
 Para proporcionar una experiencia de usuario interactiva y accesible, se ha implementado una interfaz de escritorio modular basada en la biblioteca gráfica estándar \texttt{javax.swing} (\texttt{MainWindow.java}).
 
 \subsection{Diseño Visual y Organización en Pestañas Funcionales}
 La ventana principal integra el aspecto visual nativo del sistema anfitrión mediante \texttt{UIManager.getSystemLookAndFeelClassName()}. Para mantener una jerarquía clara a medida que el catálogo de herramientas ha crecido, la interfaz organiza sus funciones mediante un contenedor con pestañas (\texttt{JTabbedPane}):
 \begin{enumerate}
-    \item \textbf{Pestaña de Debloat y Optimización}: Agrupa los 9 disparadores de saneamiento, privacidad profunda y supresión de componentes prescindibles, incluyendo el control modal de Microsoft Edge.
-    \item \textbf{Pestaña de Configuración y Utilidades}: Contiene los accesos a directivas de explorador, energía, el cuadro interactivo de Windows Update, el instalador con casillas de selección múltiple para aplicaciones esenciales (\texttt{winget}) y el conmutador (\textit{switch} tipo \texttt{JToggleButton}) para el Modo Oscuro.
+    \item \textbf{Pestaña de Debloat y Optimización}: Agrupa los 10 disparadores de saneamiento, privacidad profunda y supresión de componentes prescindibles (incluyendo los controles modales de Edge y OneDrive), encabezados por el botón de automatización completa \textbf{«Hazlo por mí»}, el cual presenta un cuadro de advertencia detallado antes de ejecutar secuencialmente todo el bloque de debloteo en un único hilo secundario.
+    \item \textbf{Pestaña de Configuración y Utilidades}: Contiene los accesos a directivas de explorador, energía, el cuadro interactivo de Windows Update, el instalador categorizado de aplicaciones esenciales (\texttt{winget}), el selector de bloqueos universales de privacidad (cámara, micrófono, ubicación y diagnósticos) y el conmutador (\textit{switch} tipo \texttt{JToggleButton}) para el Modo Oscuro.
     \item \textbf{Consola Central Integrada}: Área de texto monoespaciada (\texttt{JTextArea}) con esquema de color oscuro de alta legibilidad, encapsulada en un contenedor con desplazamiento automático (\texttt{JScrollPane}) para la visualización del flujo de eventos en tiempo real.
 \end{enumerate}
 

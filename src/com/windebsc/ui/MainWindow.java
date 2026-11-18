@@ -20,6 +20,7 @@ public class MainWindow extends JFrame {
     private JTextArea consoleArea;
 
     // Seccion 1: Debloat y Optimizacion
+    private JButton btnDoItForMe;
     private JButton btnRestorePoint;
     private JButton btnDisableTelemetry;
     private JButton btnRemoveBloatware;
@@ -29,12 +30,14 @@ public class MainWindow extends JFrame {
     private JButton btnOptimizeNetwork;
     private JButton btnOptimizeVisuals;
     private JButton btnManageEdge;
+    private JButton btnManageOneDrive;
 
     // Seccion 2: Configuracion y Utilidades
     private JButton btnConfigureExplorer;
     private JButton btnConfigurePower;
     private JButton btnConfigureWindowsUpdate;
     private JButton btnInstallEssentials;
+    private JButton btnPrivacyPermissions;
     private JToggleButton switchDarkMode;
 
     // Control global
@@ -80,6 +83,13 @@ public class MainWindow extends JFrame {
         debloatPanel.setLayout(new BoxLayout(debloatPanel, BoxLayout.Y_AXIS));
         debloatPanel.setBorder(new EmptyBorder(10, 8, 10, 8));
 
+        btnDoItForMe = new JButton("Hazlo por mi");
+        btnDoItForMe.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnDoItForMe.setMaximumSize(new Dimension(240, 36));
+        btnDoItForMe.setFocusPainted(false);
+        btnDoItForMe.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btnDoItForMe.addActionListener(e -> promptDoItForMe());
+
         btnRestorePoint = createActionButton("Crear Punto Restauracion", "scripts/restore-point.ps1");
         btnDisableTelemetry = createActionButton("Desactivar Telemetria", "scripts/disable-telemetry.ps1");
         btnRemoveBloatware = createActionButton("Eliminar Bloatware UWP", "scripts/remove-bloatware.ps1");
@@ -96,6 +106,19 @@ public class MainWindow extends JFrame {
         btnManageEdge.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         btnManageEdge.addActionListener(e -> promptEdgeAction());
 
+        btnManageOneDrive = new JButton("Gestionar OneDrive");
+        btnManageOneDrive.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnManageOneDrive.setMaximumSize(new Dimension(240, 34));
+        btnManageOneDrive.setFocusPainted(false);
+        btnManageOneDrive.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        btnManageOneDrive.addActionListener(e -> promptOneDriveAction());
+
+        debloatPanel.add(btnDoItForMe);
+        debloatPanel.add(Box.createVerticalStrut(8));
+        JSeparator sep = new JSeparator(SwingConstants.HORIZONTAL);
+        sep.setMaximumSize(new Dimension(240, 2));
+        debloatPanel.add(sep);
+        debloatPanel.add(Box.createVerticalStrut(8));
         debloatPanel.add(btnRestorePoint);
         debloatPanel.add(Box.createVerticalStrut(6));
         debloatPanel.add(btnDisableTelemetry);
@@ -113,6 +136,8 @@ public class MainWindow extends JFrame {
         debloatPanel.add(btnOptimizeVisuals);
         debloatPanel.add(Box.createVerticalStrut(6));
         debloatPanel.add(btnManageEdge);
+        debloatPanel.add(Box.createVerticalStrut(6));
+        debloatPanel.add(btnManageOneDrive);
         debloatPanel.add(Box.createVerticalGlue());
 
         JScrollPane debloatScroll = new JScrollPane(debloatPanel);
@@ -143,6 +168,13 @@ public class MainWindow extends JFrame {
         btnInstallEssentials.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         btnInstallEssentials.addActionListener(e -> promptInstallEssentials());
 
+        btnPrivacyPermissions = new JButton("Privacidad y Permisos...");
+        btnPrivacyPermissions.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnPrivacyPermissions.setMaximumSize(new Dimension(240, 34));
+        btnPrivacyPermissions.setFocusPainted(false);
+        btnPrivacyPermissions.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        btnPrivacyPermissions.addActionListener(e -> promptPrivacyPermissions());
+
         // Switch Modo Oscuro / Claro
         JPanel switchPanel = new JPanel(new BorderLayout(5, 5));
         switchPanel.setMaximumSize(new Dimension(240, 50));
@@ -165,6 +197,8 @@ public class MainWindow extends JFrame {
         configPanel.add(btnConfigureWindowsUpdate);
         configPanel.add(Box.createVerticalStrut(8));
         configPanel.add(btnInstallEssentials);
+        configPanel.add(Box.createVerticalStrut(8));
+        configPanel.add(btnPrivacyPermissions);
         configPanel.add(Box.createVerticalStrut(14));
         configPanel.add(switchPanel);
         configPanel.add(Box.createVerticalGlue());
@@ -413,6 +447,206 @@ public class MainWindow extends JFrame {
     }
 
     /**
+     * Ventana emergente interactiva para seleccionar la accion sobre Microsoft OneDrive.
+     */
+    private void promptOneDriveAction() {
+        String[] options = {"Debloat / Desactivar", "Desinstalar", "Reinstalar", "Cancelar"};
+        int choice = JOptionPane.showOptionDialog(
+                this,
+                "¿Qué quieres hacer con Microsoft OneDrive?\n\n" +
+                "• Debloat: Desactiva el inicio automático y la sincronización en segundo plano.\n" +
+                "• Desinstalar: Ejecuta el desinstalador oficial y oculta su icono del Explorador.\n" +
+                "• Reinstalar: Restaura directivas y reinstala OneDrive limpiamente.\n",
+                "Gestión de Microsoft OneDrive",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
+
+        File scriptFile = new File("scripts/manage-onedrive.ps1");
+
+        switch (choice) {
+            case 0:
+                runScriptAsync(scriptFile, "-Action", "Debloat");
+                break;
+            case 1:
+                int confirm = JOptionPane.showConfirmDialog(
+                        this,
+                        "¿Estás seguro de que deseas desinstalar Microsoft OneDrive?\n" +
+                        "Se detendrá la sincronización en la nube y se ocultará del Explorador.",
+                        "Confirmar desinstalación de OneDrive",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE
+                );
+                if (confirm == JOptionPane.YES_OPTION) {
+                    runScriptAsync(scriptFile, "-Action", "Uninstall");
+                }
+                break;
+            case 2:
+                runScriptAsync(scriptFile, "-Action", "Reinstall");
+                break;
+            default:
+                // Cancelar
+                break;
+        }
+    }
+
+    /**
+     * Dialogo interactivo para configurar bloqueos universales de privacidad de hardware/datos.
+     */
+    private void promptPrivacyPermissions() {
+        JCheckBox chkCamera = new JCheckBox("Bloquear acceso universal a la Camara", true);
+        JCheckBox chkMicrophone = new JCheckBox("Bloquear acceso universal al Microfono", true);
+        JCheckBox chkLocation = new JCheckBox("Bloquear acceso universal a la Ubicacion", true);
+        JCheckBox chkDiagnostics = new JCheckBox("Bloquear acceso a Diagnosticos de Aplicaciones", true);
+        JCheckBox chkReset = new JCheckBox("Restaurar permisos por defecto (Permitir todo)", false);
+
+        chkReset.addActionListener(e -> {
+            boolean reset = chkReset.isSelected();
+            chkCamera.setEnabled(!reset);
+            chkMicrophone.setEnabled(!reset);
+            chkLocation.setEnabled(!reset);
+            chkDiagnostics.setEnabled(!reset);
+        });
+
+        JPanel panel = new JPanel(new GridLayout(0, 1, 6, 6));
+        panel.setBorder(new EmptyBorder(8, 8, 8, 8));
+        panel.add(new JLabel("Selecciona los bloqueos universales de privacidad que deseas aplicar:"));
+        panel.add(Box.createVerticalStrut(4));
+        panel.add(chkCamera);
+        panel.add(chkMicrophone);
+        panel.add(chkLocation);
+        panel.add(chkDiagnostics);
+        panel.add(new JSeparator());
+        panel.add(chkReset);
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                panel,
+                "Proteccion Universal de Privacidad",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            File script = new File("scripts/configure-privacy-permissions.ps1");
+            if (chkReset.isSelected()) {
+                runScriptAsync(script, "-ResetDefaults");
+            } else {
+                List<String> args = new ArrayList<>();
+                if (chkCamera.isSelected()) args.add("-BlockCamera");
+                if (chkMicrophone.isSelected()) args.add("-BlockMicrophone");
+                if (chkLocation.isSelected()) args.add("-BlockLocation");
+                if (chkDiagnostics.isSelected()) args.add("-BlockDiagnostics");
+
+                if (!args.isEmpty()) {
+                    runScriptAsync(script, args.toArray(new String[0]));
+                }
+            }
+        }
+    }
+
+    /**
+     * Ventana de advertencia y ejecucion automatizada en cadena de todo el bloque de Debloat.
+     */
+    private void promptDoItForMe() {
+        String warningMessage =
+                "¡ATENCION! Se aplicaran automaticamente TODAS las herramientas de Debloat y Optimizacion:\n\n" +
+                "  1. Crear Punto de Restauracion (seguridad previa)\n" +
+                "  2. Desactivar Telemetria completa\n" +
+                "  3. Eliminar Bloatware UWP (con lista blanca de seguridad)\n" +
+                "  4. Optimizar Servicios secundarios\n" +
+                "  5. Desactivar Bing, Copilot y Widgets\n" +
+                "  6. Limpiar Temporales y Cache (Windows Update, WER, Papelera)\n" +
+                "  7. Optimizar Red y QoS (desactivar P2P Delivery Optimization)\n" +
+                "  8. Optimizar Rendimiento Visual y Gaming (Game DVR, Mouse 1:1)\n" +
+                "  9. Debloat de Microsoft Edge y Apps en segundo plano\n" +
+                " 10. Debloat de Microsoft OneDrive\n\n" +
+                "Nota: Las utilidades opcionales de la pestana 'Configuracion' (Explorador,\n" +
+                "Energia, Windows Update, Tema Oscuro, Privacidad de hardware y Apps)\n" +
+                "NO se modificaran y quedan bajo tu eleccion.\n\n" +
+                "¿Deseas continuar y ejecutar toda la secuencia?";
+
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                warningMessage,
+                "Hazlo por mi - Advertencia de Ejecucion Completa",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            List<String[]> steps = new ArrayList<>();
+            steps.add(new String[]{"scripts/restore-point.ps1"});
+            steps.add(new String[]{"scripts/disable-telemetry.ps1"});
+            steps.add(new String[]{"scripts/remove-bloatware.ps1"});
+            steps.add(new String[]{"scripts/optimize-services.ps1"});
+            steps.add(new String[]{"scripts/disable-bing-copilot.ps1"});
+            steps.add(new String[]{"scripts/clean-temp-cache.ps1"});
+            steps.add(new String[]{"scripts/optimize-network.ps1"});
+            steps.add(new String[]{"scripts/optimize-performance-visuals.ps1"});
+            steps.add(new String[]{"scripts/manage-edge.ps1", "-Action", "Debloat"});
+            steps.add(new String[]{"scripts/manage-onedrive.ps1", "-Action", "Debloat"});
+
+            runScriptSequenceAsync(steps);
+        }
+    }
+
+    /**
+     * Ejecuta una secuencia de scripts de forma ordenada en un unico hilo secundario.
+     */
+    private void runScriptSequenceAsync(List<String[]> steps) {
+        setButtonsEnabled(false);
+        appendConsole("==================================================\n");
+        appendConsole("INICIANDO MODO 'HAZLO POR MI' (" + steps.size() + " modulos)...\n");
+        appendConsole("==================================================\n\n");
+
+        new Thread(() -> {
+            int total = steps.size();
+            for (int i = 0; i < total; i++) {
+                String[] step = steps.get(i);
+                File scriptFile = new File(step[0]);
+                String[] args = new String[step.length - 1];
+                System.arraycopy(step, 1, args, 0, args.length);
+
+                int stepIndex = i + 1;
+                String argsDisplay = args.length > 0 ? " " + String.join(" ", args) : "";
+
+                SwingUtilities.invokeLater(() -> {
+                    appendConsole(">>> [" + stepIndex + "/" + total + "] Ejecutando: " + scriptFile.getName() + argsDisplay + "\n");
+                    appendConsole("--------------------------------------------------\n");
+                });
+
+                if (!scriptFile.exists()) {
+                    SwingUtilities.invokeLater(() ->
+                            appendConsole("Error: No se encontro " + scriptFile.getAbsolutePath() + " (omitiendo).\n\n"));
+                    continue;
+                }
+
+                try {
+                    int exitCode = runner.runScript(scriptFile, args, line ->
+                            SwingUtilities.invokeLater(() -> appendConsole("  " + line + "\n")));
+
+                    SwingUtilities.invokeLater(() ->
+                            appendConsole("Finalizado paso " + stepIndex + " (codigo " + exitCode + ")\n\n"));
+                } catch (Exception ex) {
+                    SwingUtilities.invokeLater(() ->
+                            appendConsole("Error en paso " + stepIndex + ": " + ex.getMessage() + "\n\n"));
+                }
+            }
+
+            SwingUtilities.invokeLater(() -> {
+                appendConsole("==================================================\n");
+                appendConsole("MODO 'HAZLO POR MI' COMPLETADO.\n");
+                appendConsole("==================================================\n\n");
+                setButtonsEnabled(true);
+            });
+        }).start();
+    }
+
+    /**
      * Ejecuta el script en un hilo en segundo plano para evitar bloquear la interfaz grafica.
      */
     private void runScriptAsync(File scriptFile, String... args) {
@@ -455,6 +689,7 @@ public class MainWindow extends JFrame {
     }
 
     private void setButtonsEnabled(boolean enabled) {
+        btnDoItForMe.setEnabled(enabled);
         btnRestorePoint.setEnabled(enabled);
         btnDisableTelemetry.setEnabled(enabled);
         btnRemoveBloatware.setEnabled(enabled);
@@ -464,11 +699,13 @@ public class MainWindow extends JFrame {
         btnOptimizeNetwork.setEnabled(enabled);
         btnOptimizeVisuals.setEnabled(enabled);
         btnManageEdge.setEnabled(enabled);
+        btnManageOneDrive.setEnabled(enabled);
 
         btnConfigureExplorer.setEnabled(enabled);
         btnConfigurePower.setEnabled(enabled);
         btnConfigureWindowsUpdate.setEnabled(enabled);
         btnInstallEssentials.setEnabled(enabled);
+        btnPrivacyPermissions.setEnabled(enabled);
         switchDarkMode.setEnabled(enabled);
 
         btnClear.setEnabled(enabled);
