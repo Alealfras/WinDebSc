@@ -34,6 +34,7 @@ public class MainWindow extends JFrame {
     private JButton btnConfigureExplorer;
     private JButton btnConfigurePower;
     private JButton btnConfigureWindowsUpdate;
+    private JButton btnInstallEssentials;
     private JToggleButton switchDarkMode;
 
     // Control global
@@ -135,6 +136,13 @@ public class MainWindow extends JFrame {
         btnConfigureWindowsUpdate.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         btnConfigureWindowsUpdate.addActionListener(e -> promptWindowsUpdateAction());
 
+        btnInstallEssentials = new JButton("Instalar Apps Esenciales...");
+        btnInstallEssentials.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnInstallEssentials.setMaximumSize(new Dimension(240, 34));
+        btnInstallEssentials.setFocusPainted(false);
+        btnInstallEssentials.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        btnInstallEssentials.addActionListener(e -> promptInstallEssentials());
+
         // Switch Modo Oscuro / Claro
         JPanel switchPanel = new JPanel(new BorderLayout(5, 5));
         switchPanel.setMaximumSize(new Dimension(240, 50));
@@ -155,6 +163,8 @@ public class MainWindow extends JFrame {
         configPanel.add(btnConfigurePower);
         configPanel.add(Box.createVerticalStrut(8));
         configPanel.add(btnConfigureWindowsUpdate);
+        configPanel.add(Box.createVerticalStrut(8));
+        configPanel.add(btnInstallEssentials);
         configPanel.add(Box.createVerticalStrut(14));
         configPanel.add(switchPanel);
         configPanel.add(Box.createVerticalGlue());
@@ -246,6 +256,112 @@ public class MainWindow extends JFrame {
                     runScriptAsync(script, args.toArray(new String[0]));
                 }
             }
+        }
+    }
+
+    /**
+     * Dialogo interactivo con casillas organizadas por categorias para instalar apps via winget.
+     */
+    private void promptInstallEssentials() {
+        String[] categories = {
+                "Navegadores y Comunicacion",
+                "Multimedia y Audio",
+                "Gaming y Launchers",
+                "Hardware y Monitorizacion",
+                "Utilidades y Desarrollo"
+        };
+
+        String[][][] categorizedApps = {
+                {
+                        {"Mozilla.Firefox", "Mozilla Firefox"},
+                        {"Brave.Brave", "Brave Browser"},
+                        {"Discord.Discord", "Discord"}
+                },
+                {
+                        {"VideoLAN.VLC", "VLC Media Player"},
+                        {"OBSProject.OBSStudio", "OBS Studio"},
+                        {"VB-Audio.Voicemeeter", "Voicemeeter"}
+                },
+                {
+                        {"Valve.Steam", "Steam"},
+                        {"EpicGames.EpicGamesLauncher", "Epic Games Launcher"}
+                },
+                {
+                        {"REALiX.HWiNFO", "HWiNFO"},
+                        {"Guru3D.Afterburner", "MSI Afterburner"},
+                        {"CPUID.CPU-Z", "CPU-Z"},
+                        {"TechPowerUp.GPU-Z", "GPU-Z"}
+                },
+                {
+                        {"7zip.7zip", "7-Zip (Compresor)"},
+                        {"Notepad++.Notepad++", "Notepad++"},
+                        {"voidtools.Everything", "Everything (Buscador)"},
+                        {"ShareX.ShareX", "ShareX (Capturas)"},
+                        {"Microsoft.PowerToys", "Microsoft PowerToys"},
+                        {"Git.Git", "Git"},
+                        {"Microsoft.VisualStudioCode", "Visual Studio Code"}
+                }
+        };
+
+        List<JCheckBox> allCheckboxes = new ArrayList<>();
+        List<String> allIds = new ArrayList<>();
+
+        JPanel categoriesGrid = new JPanel(new GridLayout(0, 2, 12, 10));
+        categoriesGrid.setBorder(new EmptyBorder(6, 6, 6, 6));
+
+        for (int c = 0; c < categories.length; c++) {
+            JPanel catPanel = new JPanel();
+            catPanel.setLayout(new BoxLayout(catPanel, BoxLayout.Y_AXIS));
+            catPanel.setBorder(BorderFactory.createTitledBorder(categories[c]));
+
+            for (String[] app : categorizedApps[c]) {
+                JCheckBox cb = new JCheckBox(app[1]);
+                cb.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+                catPanel.add(cb);
+                allCheckboxes.add(cb);
+                allIds.add(app[0]);
+            }
+            catPanel.add(Box.createVerticalGlue());
+            categoriesGrid.add(catPanel);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(categoriesGrid);
+        scrollPane.setPreferredSize(new Dimension(600, 390));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(14);
+        scrollPane.setBorder(null);
+
+        JPanel container = new JPanel(new BorderLayout(8, 10));
+        container.setBorder(new EmptyBorder(6, 6, 6, 6));
+        container.add(new JLabel("Selecciona las aplicaciones que deseas instalar desde repositorios oficiales (winget):"), BorderLayout.NORTH);
+        container.add(scrollPane, BorderLayout.CENTER);
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                container,
+                "Instalador de Aplicaciones Esenciales",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            List<String> selected = new ArrayList<>();
+            for (int i = 0; i < allCheckboxes.size(); i++) {
+                if (allCheckboxes.get(i).isSelected()) {
+                    selected.add(allIds.get(i));
+                }
+            }
+
+            if (selected.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No has seleccionado ninguna aplicacion para instalar.",
+                        "Sin seleccion",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+                return;
+            }
+
+            runScriptAsync(new File("scripts/install-essentials.ps1"), "-Packages", String.join(",", selected));
         }
     }
 
@@ -352,6 +468,7 @@ public class MainWindow extends JFrame {
         btnConfigureExplorer.setEnabled(enabled);
         btnConfigurePower.setEnabled(enabled);
         btnConfigureWindowsUpdate.setEnabled(enabled);
+        btnInstallEssentials.setEnabled(enabled);
         switchDarkMode.setEnabled(enabled);
 
         btnClear.setEnabled(enabled);

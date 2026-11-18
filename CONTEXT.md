@@ -47,14 +47,15 @@
 11. **`configure-power-plan.ps1`**: Activación del esquema oculto de Máximo Rendimiento (*Ultimate Performance*), desactivación de hibernación para purgar `hiberfil.sys` (recuperando de 8 a 32 GB de almacenamiento) y desactivación de suspensión selectiva de USB.
 12. **`configure-windows-update.ps1`**: Control selectivo paramétrico (`-ExcludeDrivers`, `-NotifyOnly`, `-ResetDefaults`): impide que Windows Update sobreescriba controladores de GPU/chipset, activa el modo de notificación previa para evitar reinicios forzados en mitad del trabajo o restablece valores por omisión.
 13. **`configure-theme-dark.ps1`**: Conmutación de tema visual global del sistema y aplicaciones (`-Mode Dark|Light`) manipulando `AppsUseLightTheme` y `SystemUsesLightTheme`.
+14. **`install-essentials.ps1`**: Instalador desatendido de aplicaciones esenciales limpias vía `winget` (`-Packages "id1,id2..."`). Organizado en 5 categorías en la GUI: Navegadores y Comunicación (Firefox, Brave, Discord), Multimedia y Audio (VLC, OBS Studio, Voicemeeter), Gaming y Launchers (Steam, Epic Games Launcher), Hardware y Monitorización (HWiNFO, MSI Afterburner, CPU-Z, GPU-Z) y Utilidades/Desarrollo (7-Zip, Notepad++, Everything, ShareX, PowerToys, Git, VS Code).
 
 ### B. Aplicación Java (`src/com/windebsc/`)
 * **`core/ScriptRunner.java`**: Ejecución de procesos PowerShell con paso dinámico de argumentos y captura de flujos en tiempo real.
 * **`Main.java`**: Entrada dual: soporta modo consola estructurado en dos categorías y modo gráfico con `--gui`.
-* **`ui/MainWindow.java`**: Interfaz gráfica en Swing organizada en **dos pestañas independientes** (`JTabbedPane`: *Debloat y Optimización* vs. *Configuración y Utilidades*), con cuadros modales interactivos para Edge y Windows Update, y un conmutador (*switch* `JToggleButton`) interactivo para alternar el Modo Oscuro en tiempo real.
+* **`ui/MainWindow.java`**: Interfaz gráfica en Swing organizada en **dos pestañas independientes** (`JTabbedPane`: *Debloat y Optimización* vs. *Configuración y Utilidades*), con cuadros modales interactivos para Edge, Windows Update y el instalador de apps esenciales, además de un conmutador (*switch* `JToggleButton`) interactivo para alternar el Modo Oscuro en tiempo real.
 
 ### C. Memoria Académica (`docs/main.tex`)
-* Redactada la base teórica completa de arquitectura, los 9 scripts de debloat y los 4 módulos de configuración y utilidades antes de la sección de la GUI.
+* Redactada la base teórica completa de arquitectura, los 9 scripts de debloat y los 5 módulos de configuración y utilidades antes de la sección de la GUI.
 * Secciones pendientes:
   * `Capítulo: Pruebas y Validación` (Pruebas en máquina virtual).
   * `Capítulo: Conclusiones y Trabajo Futuro`.

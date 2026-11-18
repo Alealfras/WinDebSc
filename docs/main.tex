@@ -372,6 +372,14 @@ El script proporciona directivas modulares invocables selectivamente mediante pa
 \subsection{Conmutación de Esquema de Color (\texttt{configure-theme-dark.ps1})}
 Permite conmutar programáticamente el tema visual mediante la actualización de los valores DWORD \texttt{AppsUseLightTheme} y \texttt{SystemUsesLightTheme} bajo \path{Software\Microsoft\Windows\CurrentVersion\Themes\Personalize}, sincronizando aplicaciones UWP, barra de tareas y explorador del sistema.
 
+\subsection{Despliegue Desatendido de Aplicaciones Esenciales (\texttt{install-essentials.ps1})}
+Tras un proceso de saneamiento o instalación limpia del sistema operativo, el usuario precisa aprovisionar herramientas básicas de productividad evitando instaladores de sitios de terceros susceptibles de incluir software publicitario (\textit{adware} o \textit{bundleware}). El módulo \texttt{install-essentials.ps1} automatiza la instalación limpia de utilidades mediante el gestor oficial \textit{Windows Package Manager} (\texttt{winget}):
+\begin{itemize}
+    \item \textbf{Catálogo Estructurado por Categorías}: Agrupa aplicaciones verificadas en bloques funcionales: \textit{Navegadores y Comunicación} (Firefox, Brave, Discord), \textit{Multimedia y Audio} (VLC, OBS Studio, Voicemeeter), \textit{Gaming y Launchers} (Steam, Epic Games), \textit{Hardware y Monitorización} (HWiNFO, MSI Afterburner, CPU-Z, GPU-Z) y \textit{Utilidades y Desarrollo} (7-Zip, Notepad++, Everything, ShareX, PowerToys, Git, VS Code).
+    \item \textbf{Parametrización Dinámica}: Recibe mediante \texttt{-Packages} una cadena de identificadores exactos separados por comas (ej. \path{7zip.7zip,VB-Audio.Voicemeeter,REALiX.HWiNFO}).
+    \item \textbf{Instalación Silenciosa y Verificada}: Invoca \path{winget install} con las banderas \path{--exact}, \path{--silent}, \path{--accept-package-agreements} y \path{--accept-source-agreements}, descargando binarios firmados directamente desde las fuentes oficiales del fabricante sin intervención manual.
+\end{itemize}
+
 \section[Interfaz Gráfica de Usuario]{Interfaz Gráfica de Usuario (GUI)}
 Para proporcionar una experiencia de usuario interactiva y accesible, se ha implementado una interfaz de escritorio modular basada en la biblioteca gráfica estándar \texttt{javax.swing} (\texttt{MainWindow.java}).
 
@@ -379,7 +387,7 @@ Para proporcionar una experiencia de usuario interactiva y accesible, se ha impl
 La ventana principal integra el aspecto visual nativo del sistema anfitrión mediante \texttt{UIManager.getSystemLookAndFeelClassName()}. Para mantener una jerarquía clara a medida que el catálogo de herramientas ha crecido, la interfaz organiza sus funciones mediante un contenedor con pestañas (\texttt{JTabbedPane}):
 \begin{enumerate}
     \item \textbf{Pestaña de Debloat y Optimización}: Agrupa los 9 disparadores de saneamiento, privacidad profunda y supresión de componentes prescindibles, incluyendo el control modal de Microsoft Edge.
-    \item \textbf{Pestaña de Configuración y Utilidades}: Contiene los accesos a directivas de explorador, energía, el cuadro interactivo de Windows Update y el conmutador (\textit{switch} tipo \texttt{JToggleButton}) para el Modo Oscuro.
+    \item \textbf{Pestaña de Configuración y Utilidades}: Contiene los accesos a directivas de explorador, energía, el cuadro interactivo de Windows Update, el instalador con casillas de selección múltiple para aplicaciones esenciales (\texttt{winget}) y el conmutador (\textit{switch} tipo \texttt{JToggleButton}) para el Modo Oscuro.
     \item \textbf{Consola Central Integrada}: Área de texto monoespaciada (\texttt{JTextArea}) con esquema de color oscuro de alta legibilidad, encapsulada en un contenedor con desplazamiento automático (\texttt{JScrollPane}) para la visualización del flujo de eventos en tiempo real.
 \end{enumerate}
 

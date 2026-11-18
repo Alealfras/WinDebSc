@@ -70,6 +70,7 @@ public class Main {
             System.out.println("11. Configurar Plan de Energia y Rendimiento (configure-power-plan.ps1)");
             System.out.println("12. Configurar Windows Update (configure-windows-update.ps1)");
             System.out.println("13. Alternar Modo Oscuro / Modo Claro (configure-theme-dark.ps1)");
+            System.out.println("14. Instalar aplicaciones esenciales (install-essentials.ps1)");
             System.out.println("0. Salir");
             System.out.print("> ");
 
@@ -114,6 +115,9 @@ public class Main {
                     break;
                 case "13":
                     executeScript(new File("scripts/configure-theme-dark.ps1"));
+                    break;
+                case "14":
+                    executeScript(new File("scripts/install-essentials.ps1"));
                     break;
                 case "0":
                     System.out.println("Saliendo de WinDebSc...");
