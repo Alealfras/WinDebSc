@@ -1,0 +1,43 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'lib/**'
+      - 'scripts/**'
+      - 'build-exe.ps1'
+      - '.github/workflows/build-exe.yml'
+  workflow_dispatch:
+
+jobs:
+  build-windows-exe:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build WinDebSc.exe with jpackage
+        shell: pwsh
+        run: |
+          .\build-exe.ps1
+
+      - name: Compress portable package into ZIP
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "dist\WinDebSc\*" -DestinationPath "WinDebSc-Windows-x64.zip" -Force
+
+      - name: Upload WinDebSc-Windows-x64.zip artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WinDebSc-Windows-x64
+          path: WinDebSc-Windows-x64.zip
+          retention-days: 30

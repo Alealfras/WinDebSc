@@ -16,6 +16,9 @@ desktop.ini
 bin/
 target/
 build/
+build-pkg/
+dist/
+*.zip
 *.jar
 !lib/*.jar
 *.war

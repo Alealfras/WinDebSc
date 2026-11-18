@@ -14,6 +14,39 @@ import java.util.function.Consumer;
 public class ScriptRunner {
 
     /**
+     * Resuelve la ruta de un script tanto en ejecucion desde IDE/CLI como desde un .exe empaquetado (jpackage).
+     */
+    public static File resolveScript(String relativePath) {
+        File direct = new File(relativePath);
+        if (direct.exists()) {
+            return direct;
+        }
+
+        try {
+            File codeLocation = new File(ScriptRunner.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+            File baseDir = codeLocation.isFile() ? codeLocation.getParentFile() : codeLocation;
+
+            // Caso 1: scripts/ junto al .jar o carpeta bin/
+            File besideJar = new File(baseDir, relativePath);
+            if (besideJar.exists()) {
+                return besideJar;
+            }
+
+            // Caso 2: jpackage app-image (el .jar esta en /app/ y scripts/ junto al .exe en el nivel superior)
+            if (baseDir.getParentFile() != null) {
+                File besideExe = new File(baseDir.getParentFile(), relativePath);
+                if (besideExe.exists()) {
+                    return besideExe;
+                }
+            }
+        } catch (Exception ignored) {
+            // Fallback al archivo directo
+        }
+
+        return direct;
+    }
+
+    /**
      * Ejecuta un script de PowerShell ubicado en el disco sin argumentos adicionales.
      */
     public int runScript(File scriptFile, Consumer<String> outputListener) throws IOException, InterruptedException {

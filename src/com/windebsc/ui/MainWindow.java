@@ -1097,7 +1097,8 @@ public class MainWindow extends JFrame {
     // EJECUCION ASINCRONA SEGURA (EDT)
     // =========================================================================
 
-    private void runScriptAsync(File scriptFile, String... args) {
+    private void runScriptAsync(File rawScriptFile, String... args) {
+        final File scriptFile = ScriptRunner.resolveScript(rawScriptFile.getPath());
         if (!scriptFile.exists()) {
             appendConsole("Error: No se encontro el archivo de script: " + scriptFile.getAbsolutePath() + "\n");
             return;
@@ -1140,7 +1141,7 @@ public class MainWindow extends JFrame {
             int total = steps.size();
             for (int i = 0; i < total; i++) {
                 String[] step = steps.get(i);
-                File scriptFile = new File(step[0]);
+                File scriptFile = ScriptRunner.resolveScript(step[0]);
                 String[] args = new String[step.length - 1];
                 System.arraycopy(step, 1, args, 0, args.length);
 

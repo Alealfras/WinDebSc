@@ -167,7 +167,8 @@ public class Main {
         }
     }
 
-    private static void executeScript(File script, String... args) {
+    private static void executeScript(File rawScript, String... args) {
+        File script = ScriptRunner.resolveScript(rawScript.getPath());
         if (!script.exists()) {
             System.err.println("No se encontro el script: " + script.getAbsolutePath());
             return;
