@@ -69,9 +69,15 @@ if ($mtExe) {
 </assembly>
 "@
         [System.IO.File]::WriteAllText($uacManifest, $manifestXml, (New-Object System.Text.UTF8Encoding $false))
-        & $mtExe.FullName -nologo -manifest $uacManifest -outputresource:"$distDir\WinDebSc\WinDebSc.exe;#1"
-        if ($LASTEXITCODE -ne 0) {
-            Write-Output "Aviso: mt.exe devolvio codigo $LASTEXITCODE. Se mantiene el ejecutable sin UAC incrustado."
+        # Esperar brevemente a que Windows Defender libere el bloqueo del .exe recien creado
+        Start-Sleep -Seconds 3
+        $prevPref = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        & $mtExe.FullName -nologo -manifest $uacManifest -outputresource:"$distDir\WinDebSc\WinDebSc.exe;#1" 2>&1 | Write-Output
+        $mtExit = $LASTEXITCODE
+        $ErrorActionPreference = $prevPref
+        if ($mtExit -ne 0) {
+            Write-Output "Aviso: mt.exe devolvio codigo $mtExit. Se mantiene el ejecutable sin UAC incrustado."
         }
     } catch {
         Write-Output "Aviso: No se pudo incrustar el manifiesto UAC: $_"
@@ -86,3 +92,4 @@ Remove-Item -Recurse -Force $buildDir
 Write-Output "=================================================="
 Write-Output "¡Listo! Ejecutable generado en: $distDir\WinDebSc\WinDebSc.exe"
 Write-Output "=================================================="
+exit 0
